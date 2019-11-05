@@ -16,7 +16,7 @@ export class Hypervisor {
     public domainCreateXML(xml: string): Promise<Domain>;
     public domainDefineXML(xml: string): Promise<Domain>;
     public domainGetInfo(domain: Domain): Promise<DomainInfo>;
-    public domainGetID(domain: Domain): Promise<number>;
+    public domainGetID(domain: Domain): Promise<number | null>;
     public domainGetName(domain: Domain): Promise<string>;
     public domainGetUUIDString(domain: Domain): Promise<string>;
     public domainLookupByID(id: number): Promise<Domain>;

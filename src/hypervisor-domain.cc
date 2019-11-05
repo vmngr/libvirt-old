@@ -219,13 +219,28 @@ public:
     void Execute(void) override
     {
         id = virDomainGetID(domain->domainPtr);
-        if (id == static_cast<unsigned int>(-1)) SetVirError();
+
+        /* Inactive domains dont't have an id, so virDomainGetID will return -1,
+         * but not set an error. This will cause SetVirtError to throw an
+         * "Unknown error". But in this case it might be better to just return
+         * null as id. */
+
+        if (id == static_cast<unsigned int>(-1))
+        {
+            virErrorPtr err = virGetLastError();
+            if (err != NULL) SetError(std::string(err->message));
+        }
     }
 
     void OnOK(void) override
     {
         Napi::HandleScope scope(Env());
-        deferred.Resolve(Napi::Number::New(Env(), this->id));
+
+        // See comment above.
+        if (id != static_cast<unsigned int>(-1))
+            deferred.Resolve(Napi::Number::New(Env(), this->id));
+        else deferred.Resolve(Env().Undefined()); 
+
         Callback().Call({});
     }
 
