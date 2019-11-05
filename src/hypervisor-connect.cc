@@ -130,13 +130,15 @@ Napi::Value Hypervisor::ConnectListAllDomains(const Napi::CallbackInfo& info)
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
-    if (info.Length() <= 0 || !info[0].IsNumber())
+    unsigned int flags = 0;
+
+    if (info.Length() >= 1 && info[0].IsNumber())
+        flags = info[0].As<Napi::Number>();
+    else if (info.Length() >= 1 && !info[0].IsNumber())
     {
         deferred.Reject(Napi::String::New(env, "Expected a number."));
         return deferred.Promise();
     }
-
-    unsigned int flags = info[0].As<Napi::Number>();
 
     ConnectListAllDomainsWorker* worker =
         new ConnectListAllDomainsWorker(callback, deferred, this, flags);

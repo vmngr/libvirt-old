@@ -9,7 +9,7 @@ export class Hypervisor {
     public connectOpen(): Promise<void>;
     public connectClose(): Promise<void>;
     public connectListAllDomains(
-        flags: ConnectListAllDomainsFlags): Promise<Domain[]>;
+        flags?: ConnectListAllDomainsFlags): Promise<Domain[]>;
     public connectListDomains(): Promise<number[]>;
     public connectListDefinedDomains(): Promise<string[]>;
 
