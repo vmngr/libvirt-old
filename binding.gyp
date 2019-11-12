@@ -12,6 +12,7 @@
                 "src/hypervisor.cc",
                 "src/hypervisor-connect.cc",
                 "src/hypervisor-domain.cc",
+                "src/hypervisor-node.cc",
                 "src/domain.cc"
             ],
             "include_dirs": [

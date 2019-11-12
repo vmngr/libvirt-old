@@ -256,3 +256,64 @@ Napi::Value Hypervisor::ConnectListDefinedDomains(
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * ConnectGetMaxVcpus                                                         *
+ ******************************************************************************/
+
+class ConnectGetMaxVcpusWorker : public Worker {
+public:
+
+    ConnectGetMaxVcpusWorker(
+        Napi::Function& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        std::string type
+    ) : Worker(callback, deferred, hypervisor),
+        type(type) {}
+
+    void Execute(void) override
+    {
+        const char* type = (this->type.empty()) ? NULL : this->type.c_str();
+        maxVcpus = virConnectGetMaxVcpus(hypervisor->conn, type);
+        if (maxVcpus < 0) SetVirError();
+    }
+
+    void OnOK(void) override
+    {
+        Napi::HandleScope scope(Env());
+        deferred.Resolve(Napi::Number::New(Env(), maxVcpus));
+        Callback().Call({});
+    }
+
+private:
+
+    std::string type;
+    int maxVcpus;
+
+};
+
+Napi::Value Hypervisor::ConnectGetMaxVcpus(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    std::string type;
+
+    if (info.Length() >= 1 && info[0].IsString())
+        type = info[0].As<Napi::String>();
+    else if (info.Length() >= 1 && !info[0].IsString())
+    {
+        deferred.Reject(Napi::String::New(env, "Expected a string."));
+        return deferred.Promise();
+    }
+
+    ConnectGetMaxVcpusWorker* worker =
+        new ConnectGetMaxVcpusWorker(callback, deferred, this, type);
+    worker->Queue();
+
+    return deferred.Promise();
+}

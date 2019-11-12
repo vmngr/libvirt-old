@@ -12,6 +12,7 @@ export class Hypervisor {
         flags?: ConnectListAllDomainsFlags): Promise<Domain[]>;
     public connectListDomains(): Promise<number[]>;
     public connectListDefinedDomains(): Promise<string[]>;
+    public connectGetMaxVcpus(type?: string): Promise<number>;
 
     public domainCreateXML(xml: string): Promise<Domain>;
     public domainDefineXML(xml: string): Promise<Domain>;
@@ -24,6 +25,8 @@ export class Hypervisor {
     public domainLookupByUUIDString(uuid: string): Promise<Domain>;
     public domainSave(domain: Domain, filename: string): Promise<void>;
     public domainRestore(filename: string): Promise<void>;
+
+    public nodeGetInfo(): Promise<NodeInfo>;
 
 }
 
@@ -65,4 +68,15 @@ export interface DomainInfo {
     memory: number;
     nrVirtCpu: number;
     cpuTime: number;
+}
+
+export interface NodeInfo {
+    model: string;
+    memory: number;
+    cpus: number;
+    mhz: number;
+    nodes: number;
+    sockets: number;
+    cores: number;
+    threads: number;
 }

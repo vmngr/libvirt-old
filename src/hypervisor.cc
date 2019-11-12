@@ -14,6 +14,7 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports)
         InstanceMethod("connectListDomains", &Hypervisor::ConnectListDomains),
         InstanceMethod("connectListDefinedDomains",
             &Hypervisor::ConnectListDefinedDomains),
+        InstanceMethod("connectGetMaxVcpus", &Hypervisor::ConnectGetMaxVcpus),
 
         InstanceMethod("domainCreateXML", &Hypervisor::DomainCreateXML),
         InstanceMethod("domainDefineXML", &Hypervisor::DomainDefineXML),
@@ -26,7 +27,9 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports)
         InstanceMethod("domainLookupByUUIDString",
             &Hypervisor::DomainLookupByUUIDString),
         InstanceMethod("domainSave", &Hypervisor::DomainSave),
-        InstanceMethod("domainRestore", &Hypervisor::DomainRestore)
+        InstanceMethod("domainRestore", &Hypervisor::DomainRestore),
+
+        InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
 
     });
 

@@ -14,6 +14,7 @@ class ConnectCloseWorker;
 class ConnectListAllDomainsWorker;
 class ConnectListDomainsWorker;
 class ConnectListDefinedDomainsWorker;
+class ConnectGetMaxVcpusWorker;
 
 class DomainCreateXMLWorker;
 class DomainDefineXMLWorker;
@@ -27,6 +28,8 @@ class DomainLookupByUUIDStringWorker;
 class DomainSaveWorker;
 class DomainRestoreWorker;
 
+class NodeGetInfoWorker;
+
 class Hypervisor : public Napi::ObjectWrap<Hypervisor>
 {
 public:
@@ -39,6 +42,7 @@ public:
     Napi::Value ConnectListAllDomains(const Napi::CallbackInfo& info);
     Napi::Value ConnectListDomains(const Napi::CallbackInfo& info);
     Napi::Value ConnectListDefinedDomains(const Napi::CallbackInfo& info);
+    Napi::Value ConnectGetMaxVcpus(const Napi::CallbackInfo& info);
 
     Napi::Value DomainCreateXML(const Napi::CallbackInfo& info);
     Napi::Value DomainDefineXML(const Napi::CallbackInfo& info);
@@ -52,6 +56,8 @@ public:
     Napi::Value DomainSave(const Napi::CallbackInfo& info);
     Napi::Value DomainRestore(const Napi::CallbackInfo& info);
 
+    Napi::Value NodeGetInfo(const Napi::CallbackInfo& info);
+
 private:
 
     static Napi::FunctionReference constructor;
@@ -64,6 +70,7 @@ private:
     friend class ConnectListAllDomainsWorker;
     friend class ConnectListDomainsWorker;
     friend class ConnectListDefinedDomainsWorker;
+    friend class ConnectGetMaxVcpusWorker;
 
     friend class DomainCreateXMLWorker;
     friend class DomainDefineXMLWorker;
@@ -75,6 +82,8 @@ private:
     friend class DomainLookupByNameWorker;
     friend class DomainLookupByUUIDStringWorker;
     friend class DomainRestoreWorker;
+
+    friend class NodeGetInfoWorker;
 
 };
 
