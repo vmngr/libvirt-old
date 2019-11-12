@@ -2,7 +2,7 @@ import * as libvirt from "../";
 
 (async function() {
 
-    const uri = "qemu+ssh://napoles/system?socket=/var/run/libvirt/libvirt-sock";
+    const uri = "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     await hypervisor.connectOpen();
