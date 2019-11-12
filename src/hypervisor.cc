@@ -15,6 +15,7 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports)
         InstanceMethod("connectListDefinedDomains",
             &Hypervisor::ConnectListDefinedDomains),
         InstanceMethod("connectGetMaxVcpus", &Hypervisor::ConnectGetMaxVcpus),
+        InstanceMethod("connectGetHostname", &Hypervisor::ConnectGetHostname),
 
         InstanceMethod("domainCreateXML", &Hypervisor::DomainCreateXML),
         InstanceMethod("domainDefineXML", &Hypervisor::DomainDefineXML),

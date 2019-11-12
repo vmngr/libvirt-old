@@ -317,3 +317,50 @@ Napi::Value Hypervisor::ConnectGetMaxVcpus(const Napi::CallbackInfo& info)
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * ConnectGetHostname                                                         *
+ ******************************************************************************/
+
+class ConnectGetHostnameWorker : public Worker {
+public:
+
+    using Worker::Worker;
+
+    void Execute(void) override
+    {
+        hostname = virConnectGetHostname(hypervisor->conn);
+        if (hostname == NULL) SetVirError();
+    }
+
+    void OnOK(void) override
+    {
+        Napi::HandleScope scope(Env());
+
+        Napi::String hostnameStr = Napi::String::New(Env(), hostname);
+        free(hostname);
+
+        deferred.Resolve(hostnameStr);
+        Callback().Call({});
+    }
+
+private:
+
+    char* hostname;
+
+};
+
+Napi::Value Hypervisor::ConnectGetHostname(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    ConnectGetHostnameWorker* worker =
+        new ConnectGetHostnameWorker(callback, deferred, this);
+    worker->Queue();
+
+    return deferred.Promise();
+}

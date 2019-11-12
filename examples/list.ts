@@ -7,6 +7,9 @@ import * as libvirt from "../";
 
     await hypervisor.connectOpen();
 
+    const hostname = await hypervisor.connectGetHostname();
+    process.stdout.write(`Connected to ${hostname}!\n\n`);
+
     const activeDomains = await hypervisor.connectListAllDomains(
         libvirt.ConnectListAllDomainsFlags.ACTIVE);
     const inactiveDomains = await hypervisor.connectListAllDomains(

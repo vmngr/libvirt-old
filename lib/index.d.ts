@@ -13,6 +13,7 @@ export class Hypervisor {
     public connectListDomains(): Promise<number[]>;
     public connectListDefinedDomains(): Promise<string[]>;
     public connectGetMaxVcpus(type?: string): Promise<number>;
+    public connectGetHostname(): Promise<string>;
 
     public domainCreateXML(xml: string): Promise<Domain>;
     public domainDefineXML(xml: string): Promise<Domain>;

@@ -15,6 +15,7 @@ class ConnectListAllDomainsWorker;
 class ConnectListDomainsWorker;
 class ConnectListDefinedDomainsWorker;
 class ConnectGetMaxVcpusWorker;
+class ConnectGetHostnameWorker;
 
 class DomainCreateXMLWorker;
 class DomainDefineXMLWorker;
@@ -43,6 +44,7 @@ public:
     Napi::Value ConnectListDomains(const Napi::CallbackInfo& info);
     Napi::Value ConnectListDefinedDomains(const Napi::CallbackInfo& info);
     Napi::Value ConnectGetMaxVcpus(const Napi::CallbackInfo& info);
+    Napi::Value ConnectGetHostname(const Napi::CallbackInfo& info);
 
     Napi::Value DomainCreateXML(const Napi::CallbackInfo& info);
     Napi::Value DomainDefineXML(const Napi::CallbackInfo& info);
@@ -71,6 +73,7 @@ private:
     friend class ConnectListDomainsWorker;
     friend class ConnectListDefinedDomainsWorker;
     friend class ConnectGetMaxVcpusWorker;
+    friend class ConnectGetHostnameWorker;
 
     friend class DomainCreateXMLWorker;
     friend class DomainDefineXMLWorker;
