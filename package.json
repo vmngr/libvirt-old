@@ -9,6 +9,7 @@
     "build": "node-gyp rebuild",
     "test": "echo \"Error: no test specified\" && exit 1",
     "examples/list": "ts-node -P examples/tsconfig.json examples/list.ts",
+    "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",
     "examples/shutdown": "ts-node -P examples/tsconfig.json examples/shutdown.ts"
   },
   "repository": {
