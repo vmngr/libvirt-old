@@ -28,6 +28,8 @@ class DomainLookupByNameWorker;
 class DomainLookupByUUIDStringWorker;
 class DomainSaveWorker;
 class DomainRestoreWorker;
+class DomainCreateWorker;
+class DomainShutdownWorker;
 
 class NodeGetInfoWorker;
 
@@ -56,6 +58,8 @@ public:
     Napi::Value DomainLookupByName(const Napi::CallbackInfo& info);
     Napi::Value DomainLookupByUUIDString(const Napi::CallbackInfo& info);
     Napi::Value DomainSave(const Napi::CallbackInfo& info);
+    Napi::Value DomainCreate(const Napi::CallbackInfo& info);
+    Napi::Value DomainShutdown(const Napi::CallbackInfo& info);
     Napi::Value DomainRestore(const Napi::CallbackInfo& info);
 
     Napi::Value NodeGetInfo(const Napi::CallbackInfo& info);
@@ -85,6 +89,8 @@ private:
     friend class DomainLookupByNameWorker;
     friend class DomainLookupByUUIDStringWorker;
     friend class DomainRestoreWorker;
+    friend class DomainCreateWorker;
+    friend class DomainShutdownWorker;
 
     friend class NodeGetInfoWorker;
 

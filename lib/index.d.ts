@@ -26,6 +26,8 @@ export class Hypervisor {
     public domainLookupByUUIDString(uuid: string): Promise<Domain>;
     public domainSave(domain: Domain, filename: string): Promise<void>;
     public domainRestore(filename: string): Promise<void>;
+    public domainCreate(domain: Domain): Promise<void>;
+    public domainShutdown(domain: Domain): Promise<void>;
 
     public nodeGetInfo(): Promise<NodeInfo>;
 

@@ -28,6 +28,8 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports)
         InstanceMethod("domainLookupByUUIDString",
             &Hypervisor::DomainLookupByUUIDString),
         InstanceMethod("domainSave", &Hypervisor::DomainSave),
+        InstanceMethod("domainCreate", &Hypervisor::DomainCreate),
+        InstanceMethod("domainShutdown", &Hypervisor::DomainShutdown),
         InstanceMethod("domainRestore", &Hypervisor::DomainRestore),
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)

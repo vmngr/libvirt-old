@@ -35,6 +35,8 @@ private:
     friend class DomainLookupByNameWorker;
     friend class DomainLookupByUUIDStringWorker;
     friend class DomainSaveWorker;
+    friend class DomainCreateWorker;
+    friend class DomainShutdownWorker;
     friend class DomainRestoreWorker;
 
 };

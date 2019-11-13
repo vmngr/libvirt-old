@@ -688,3 +688,96 @@ Napi::Value Hypervisor::DomainRestore(const Napi::CallbackInfo& info)
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainCreate                                                               *
+ ******************************************************************************/
+class DomainCreateWorker : public Worker {
+public:
+    DomainCreateWorker(
+        Napi::Function& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain
+    ) : Worker(callback, deferred, hypervisor),
+        domain(domain) {}
+
+    void Execute(void) override
+    {
+        int create = virDomainCreate(domain->domainPtr);
+        if (create < 0) SetVirError();
+    }
+
+private:
+    Domain* domain;
+};
+
+Napi::Value Hypervisor::DomainCreate(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject())
+    {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainCreateWorker* worker = new DomainCreateWorker(
+        callback, deferred, this, domain);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+/******************************************************************************
+ * DomainShutDown                                                             *
+ ******************************************************************************/
+class DomainShutdownWorker : public Worker {
+public:
+    DomainShutdownWorker(
+        Napi::Function& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain
+    ) : Worker(callback, deferred, hypervisor),
+        domain(domain) {}
+
+    void Execute(void) override
+    {
+        int shutdown = virDomainShutdown(domain->domainPtr);
+        if (shutdown < 0) SetVirError();
+    }
+
+private:
+    Domain* domain;
+};
+
+Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject())
+    {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainShutdownWorker* worker = new DomainShutdownWorker(
+        callback, deferred, this, domain);
+    worker->Queue();
+
+    return deferred.Promise();
+}
