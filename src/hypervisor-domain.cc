@@ -23,7 +23,7 @@ static Napi::Value dummyCallback(const Napi::CallbackInfo& info) {
 class DomainCreateXMLWorker : public Worker {
  public:
     DomainCreateXMLWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string domainXml)
@@ -77,7 +77,7 @@ Napi::Value Hypervisor::DomainCreateXML(const Napi::CallbackInfo& info) {
 class DomainDefineXMLWorker : public Worker {
  public:
     DomainDefineXMLWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string domainXml)
@@ -131,7 +131,7 @@ Napi::Value Hypervisor::DomainDefineXML(const Napi::CallbackInfo& info) {
 class DomainGetInfoWorker : public Worker {
  public:
     DomainGetInfoWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)
@@ -190,7 +190,7 @@ Napi::Value Hypervisor::DomainGetInfo(const Napi::CallbackInfo& info) {
 class DomainGetIDWorker : public Worker {
  public:
     DomainGetIDWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)
@@ -256,7 +256,7 @@ Napi::Value Hypervisor::DomainGetID(const Napi::CallbackInfo& info) {
 class DomainGetNameWorker : public Worker {
  public:
     DomainGetNameWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)
@@ -307,7 +307,7 @@ Napi::Value Hypervisor::DomainGetName(const Napi::CallbackInfo& info) {
 class DomainGetUUIDStringWorker : public Worker {
  public:
     DomainGetUUIDStringWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)
@@ -359,7 +359,7 @@ Napi::Value Hypervisor::DomainGetUUIDString(const Napi::CallbackInfo& info) {
 class DomainLookupByIDWorker : public Worker {
  public:
     DomainLookupByIDWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         int id)
@@ -413,7 +413,7 @@ Napi::Value Hypervisor::DomainLookupByID(const Napi::CallbackInfo& info) {
 class DomainLookupByNameWorker : public Worker {
  public:
     DomainLookupByNameWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string name)
@@ -467,7 +467,7 @@ Napi::Value Hypervisor::DomainLookupByName(const Napi::CallbackInfo& info) {
 class DomainLookupByUUIDStringWorker : public Worker {
  public:
     DomainLookupByUUIDStringWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string uuid)
@@ -522,7 +522,7 @@ Napi::Value Hypervisor::DomainLookupByUUIDString(
 class DomainSaveWorker : public Worker {
  public:
     DomainSaveWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain,
@@ -574,7 +574,7 @@ Napi::Value Hypervisor::DomainSave(const Napi::CallbackInfo& info) {
 class DomainRestoreWorker : public Worker {
  public:
     DomainRestoreWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string filename)
@@ -617,7 +617,7 @@ Napi::Value Hypervisor::DomainRestore(const Napi::CallbackInfo& info) {
 class DomainCreateWorker : public Worker {
  public:
     DomainCreateWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)
@@ -661,7 +661,7 @@ Napi::Value Hypervisor::DomainCreate(const Napi::CallbackInfo& info) {
 class DomainShutdownWorker : public Worker {
  public:
     DomainShutdownWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain)

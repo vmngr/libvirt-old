@@ -80,7 +80,7 @@ Napi::Value Hypervisor::ConnectClose(const Napi::CallbackInfo& info) {
 class ConnectListAllDomainsWorker : public Worker {
  public:
     ConnectListAllDomainsWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         unsigned int flags)
@@ -241,7 +241,7 @@ Napi::Value Hypervisor::ConnectListDefinedDomains(
 class ConnectGetMaxVcpusWorker : public Worker {
  public:
     ConnectGetMaxVcpusWorker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         std::string type)

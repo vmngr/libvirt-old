@@ -21,7 +21,7 @@ class Worker : public Napi::AsyncWorker {
 
  public:
     Worker(
-        Napi::Function& const callback,
+        Napi::Function const& callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor)
         : Napi::AsyncWorker(callback), deferred(deferred),

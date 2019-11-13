@@ -16,7 +16,8 @@
                 "src/domain.cc"
             ],
             "include_dirs": [
-                "<!@(node -p \"require('node-addon-api').include\")"
+                "<!@(node -p \"require('node-addon-api').include\")",
+                "."
             ],
             "link_settings": {
                 "libraries": [ "-lvirt" ]
