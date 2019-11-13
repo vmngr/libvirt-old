@@ -1,3 +1,9 @@
+#ide config
+**/.vscode
+
+#git
+/.git
+
 # dependencies
 /node_modules
 
@@ -6,3 +12,6 @@
 
 # misc
 **/.DS_Store
+
+# test file
+test.c
