@@ -39,7 +39,7 @@ const hypervisor = new libvirt.Hypervisor({ uri });
 
 MIT License
 
-Copyright (c) 2019 Leon Rinkel <leon@rinkel.me>
+Copyright (c) 2019 Leon Rinkel <leon@rinkel.me> and vmngr/libvirt contributers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
