@@ -16,13 +16,13 @@ import * as libvirt from "../";
         return;
     }
 
-    for (let inactiveDomain of activeDomains){
-        const domainName = await hypervisor.domainGetName(inactiveDomain);
+    for (let activeDomain of activeDomains){
+        const domainName = await hypervisor.domainGetName(activeDomain);
         const domainLookup = await hypervisor.domainLookupByName(domainName);
         
         console.log(`Shutting down domain: ${domainName}`);
 
-        await hypervisor.domainShutdown(inactiveDomain).then(()=>{
+        await hypervisor.domainShutdown(activeDomain).then(()=>{
             console.log(`Domain ${domainName} shutdown success!`)
         }).catch((err: any)=>{
             console.error(`Domain ${domainName} shutdown ERROR:`, err);
