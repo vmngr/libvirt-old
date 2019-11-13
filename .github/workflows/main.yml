@@ -16,7 +16,7 @@ jobs:
         version: 10.x
 
     - name: Install libvirt
-      run: sudo apt-install -y libvirt
+      run: sudo apt-get install -y libvirt
 
     - name: npm install
       run: npm install
