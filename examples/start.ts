@@ -1,32 +1,36 @@
-import * as libvirt from "../";
 import chalk from "chalk";
+import process from "process";
 
-(async ()=>{
+import * as libvirt from "../";
+
+(async () => {
 
     const uri = "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
-    //Connecting to our hypervisor
+    // Connecting to our hypervisor
     await hypervisor.connectOpen();
 
     const inactiveDomains = await hypervisor.connectListAllDomains(
         libvirt.ConnectListAllDomainsFlags.INACTIVE);
 
-    if (inactiveDomains.length == 0) {
-        console.log("No domains for shutdown :(");
+    if (inactiveDomains.length === 0) {
+        process.stdout.write("No domains to start :(");
         return;
     }
 
-    for (let inactiveDomain of inactiveDomains){
+    for (const inactiveDomain of inactiveDomains) {
         const domainName = await hypervisor.domainGetName(inactiveDomain);
-        
-        console.log(`Starting domain: ${chalk.blue(domainName)}`);
 
-        await hypervisor.domainCreate(inactiveDomain).then(()=>{
-            console.log(`Domain ${chalk.green(domainName)} has been started!`);
-        }).catch((err: any)=>{
-            console.error(`Domain ${chalk.red(domainName)} shutdown ERROR:`, err);
-        })
+        process.stdout.write(`Starting domain: ${chalk.blue(domainName)}`);
+
+        await hypervisor.domainCreate(inactiveDomain).then(() => {
+            process.stdout.write(
+                `Domain ${chalk.green(domainName)} has been started!`);
+        }).catch((err: any) => {
+            process.stderr.write(
+                `Domain ${chalk.red(domainName)} shutdown ERROR:`, err);
+        });
     }
 
-})()
+})();

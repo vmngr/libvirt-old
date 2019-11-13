@@ -13,6 +13,13 @@
             "type": "npm",
             "script": "examples/list",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "lint/examples",
+            "problemMatcher": [
+                "$tslint5"
+            ]
         }
     ]
 }

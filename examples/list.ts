@@ -1,8 +1,9 @@
-import * as libvirt from "../";
-import process from "process";
 import chalk from "chalk";
+import process from "process";
 
-(async function() {
+import * as libvirt from "../";
+
+(async () => {
 
     const uri = "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
@@ -26,14 +27,16 @@ import chalk from "chalk";
 
     process.stdout.write("Active Domains\n");
     process.stdout.write("--------------\n");
-    for (const name of activeDomainNames)
+    for (const name of activeDomainNames) {
         process.stdout.write(chalk.green(`  ${name}\n`));
-    process.stdout.write('\n');
+    }
+    process.stdout.write("\n");
 
     process.stdout.write("Inactive Domains\n");
     process.stdout.write("-----------------\n");
-    for (const name of inactiveDomainNames)
+    for (const name of inactiveDomainNames) {
         process.stdout.write(chalk.red(`  ${name}`));
-    process.stdout.write('\n');
+    }
+    process.stdout.write("\n");
 
 })();
