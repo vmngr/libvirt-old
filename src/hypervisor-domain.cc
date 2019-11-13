@@ -751,7 +751,6 @@ public:
     void Execute(void) override
     {
         int shutdown = virDomainShutdown(domain->domainPtr);
-
         if (shutdown < 0) SetVirError();
     }
 
