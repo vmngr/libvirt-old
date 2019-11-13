@@ -28,6 +28,8 @@ export class Hypervisor {
     public domainRestore(filename: string): Promise<void>;
     public domainCreate(domain: Domain): Promise<void>;
     public domainShutdown(domain: Domain): Promise<void>;
+    public domainGetXMLDesc(domain: Domain,
+        flags?: DomainGetXMLDescFlags): Promise<string>;
 
     public nodeGetInfo(): Promise<NodeInfo>;
 
@@ -50,6 +52,13 @@ export const enum ConnectListAllDomainsFlags {
     NO_SNAPSHOT    = 8192,
     HAS_CHECKPOINT = 16384,
     NO_CHECKPOINT  = 32768,
+}
+
+export const enum DomainGetXMLDescFlags {
+    SECURE     = 1,
+    INACTIVE   = 2,
+    UPDATE_CPU = 4,
+    MIGRATABLE = 8,
 }
 
 export class Domain {}

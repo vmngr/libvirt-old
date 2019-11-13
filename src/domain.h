@@ -42,6 +42,7 @@ class Domain : public Napi::ObjectWrap<Domain> {
     friend class DomainCreateWorker;
     friend class DomainShutdownWorker;
     friend class DomainRestoreWorker;
+    friend class DomainGetXMLDescWorker;
 };
 
 #endif  // SRC_DOMAIN_H_

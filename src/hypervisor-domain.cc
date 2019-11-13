@@ -697,3 +697,70 @@ Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info) {
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainGetXMLDesc                                                           *
+ ******************************************************************************/
+
+class DomainGetXMLDescWorker : public Worker {
+ public:
+    DomainGetXMLDescWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor), domain(domain),
+          flags(flags) {}
+
+    void Execute(void) override {
+        xmlDesc = virDomainGetXMLDesc(domain->domainPtr, flags);
+        if (xmlDesc == NULL) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::String xmlDescStr = Napi::String::New(Env(), xmlDesc);
+        free(xmlDesc);
+
+        deferred.Resolve(xmlDescStr);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    unsigned int flags;
+    char* xmlDesc;
+};
+
+Napi::Value Hypervisor::DomainGetXMLDesc(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int flags = 0;
+
+    if (info.Length() >= 2 && info[1].IsNumber()) {
+        flags = info[1].As<Napi::Number>();
+    } else if (info.Length() >= 2 && !info[1].IsNumber()) {
+        deferred.Reject(Napi::String::New(env, "Expected a number."));
+        return deferred.Promise();
+    }
+
+    DomainGetXMLDescWorker* worker =
+        new DomainGetXMLDescWorker(callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
