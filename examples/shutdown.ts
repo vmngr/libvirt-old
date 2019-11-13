@@ -28,7 +28,7 @@ import * as libvirt from "../";
         await hypervisor.domainShutdown(activeDomain).then(() => {
             process.stdout.write(`domain ${chalk.green(domainName)} `
                 + "shutdown success!\n\n");
-        }).catch((err: any) => {
+        }).catch((err: Error) => {
             process.stderr.write(`domain ${chalk.red(domainName)} shutdown `
                 + `ERROR: ${err}\n\n`);
         });

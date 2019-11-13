@@ -27,7 +27,7 @@ import * as libvirt from "../";
         await hypervisor.domainCreate(inactiveDomain).then(() => {
             process.stdout.write(
                 `domain ${chalk.green(domainName)} has been started!\n\n`);
-        }).catch((err: any) => {
+        }).catch((err: Error) => {
             process.stderr.write(
                 `domain ${chalk.red(domainName)} shutdown ERROR: ${err} \n\n`);
         });

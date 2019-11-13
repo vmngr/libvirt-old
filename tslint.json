@@ -1,9 +1,6 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
-    ],
-    "jsRules": {},
-    "rules": {},
-    "rulesDirectory": []
+    "extends": "gts/tslint.json",
+    "linterOptions": {
+        "exclude": [ "**/*.json" ]
+    }
 }
