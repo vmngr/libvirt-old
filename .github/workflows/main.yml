@@ -1,0 +1,28 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set Node.js 10.x
+      uses: actions/setup-node@master
+      with:
+        version: 10.x
+
+    - name: Install libvirt
+      run: sudo apt-install -y libvirt
+
+    - name: npm install
+      run: npm install
+
+    - name: npm lint/bindings
+      run: npm lint/bindings
+
+    - name: lint/examples
+      run: npm lint/bindings
