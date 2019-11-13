@@ -23,9 +23,9 @@ import chalk from "chalk";
         console.log(`Starting domain: ${chalk.blue(domainName)}`);
 
         await hypervisor.domainShutdown(inactiveDomain).then(()=>{
-            console.log(chalk.green(`Domain ${chalk.green(domainName)} has been started!`))
+            console.log((`Domain ${chalk.green(domainName)} has been started!`)
         }).catch((err: any)=>{
-            console.error(chalk.red(`Domain ${chalk.red(domainName)} shutdown ERROR:`), err);
+            console.error(`Domain ${chalk.red(domainName)} shutdown ERROR:`, err);
         })
     }
 
