@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import process from "process";
 
 import * as libvirt from "../";
@@ -21,12 +22,15 @@ import * as libvirt from "../";
     for (const activeDomain of activeDomains) {
         const domainName = await hypervisor.domainGetName(activeDomain);
 
-        process.stdout.write(`Shutting down domain: ${domainName}`);
+        process.stdout.write(`Shutting down domain: `
+            + `${chalk.blue(domainName)} ... `);
 
         await hypervisor.domainShutdown(activeDomain).then(() => {
-            process.stdout.write(`Domain ${domainName} shutdown success!`);
+            process.stdout.write(`domain ${chalk.green(domainName)} `
+                + "shutdown success!\n\n");
         }).catch((err: any) => {
-            process.stderr.write(`Domain ${domainName} shutdown ERROR:`, err);
+            process.stderr.write(`domain ${chalk.red(domainName)} shutdown `
+                + `ERROR: ${err}\n\n`);
         });
     }
 

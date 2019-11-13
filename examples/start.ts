@@ -22,14 +22,14 @@ import * as libvirt from "../";
     for (const inactiveDomain of inactiveDomains) {
         const domainName = await hypervisor.domainGetName(inactiveDomain);
 
-        process.stdout.write(`Starting domain: ${chalk.blue(domainName)}`);
+        process.stdout.write(`Starting domain: ${chalk.blue(domainName)} ... `);
 
         await hypervisor.domainCreate(inactiveDomain).then(() => {
             process.stdout.write(
-                `Domain ${chalk.green(domainName)} has been started!`);
+                `domain ${chalk.green(domainName)} has been started!\n\n`);
         }).catch((err: any) => {
             process.stderr.write(
-                `Domain ${chalk.red(domainName)} shutdown ERROR:`, err);
+                `domain ${chalk.red(domainName)} shutdown ERROR: ${err} \n\n`);
         });
     }
 

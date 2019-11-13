@@ -35,7 +35,7 @@ import * as libvirt from "../";
     process.stdout.write("Inactive Domains\n");
     process.stdout.write("-----------------\n");
     for (const name of inactiveDomainNames) {
-        process.stdout.write(chalk.red(`  ${name}`));
+        process.stdout.write(chalk.red(`  ${name}\n`));
     }
     process.stdout.write("\n");
 

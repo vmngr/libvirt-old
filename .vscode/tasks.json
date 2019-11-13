@@ -25,6 +25,16 @@
             "type": "npm",
             "script": "lint/bindings",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "examples/start",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "examples/shutdown",
+            "problemMatcher": []
         }
     ]
 }
