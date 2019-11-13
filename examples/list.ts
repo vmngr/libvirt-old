@@ -22,7 +22,6 @@ import chalk from 'chalk';
 
     const inactiveDomainNames = await Promise.all(inactiveDomains
         .map((domain) => hypervisor.domainGetName(domain)));
-    
     await hypervisor.connectClose();
 
     process.stdout.write("Active Domains\n");
