@@ -18,7 +18,6 @@ import * as libvirt from "../";
 
     for (let activeDomain of activeDomains){
         const domainName = await hypervisor.domainGetName(activeDomain);
-        const domainLookup = await hypervisor.domainLookupByName(domainName);
         
         console.log(`Shutting down domain: ${domainName}`);
 
