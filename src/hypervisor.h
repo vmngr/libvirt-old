@@ -91,6 +91,7 @@ private:
     friend class DomainRestoreWorker;
     friend class DomainCreateWorker;
     friend class DomainShutdownWorker;
+
     friend class NodeGetInfoWorker;
 
 };
