@@ -1,6 +1,6 @@
 import * as libvirt from "../";
-import process from 'process';
-import chalk from 'chalk';
+import process from "process";
+import chalk from "chalk";
 
 (async function() {
 
