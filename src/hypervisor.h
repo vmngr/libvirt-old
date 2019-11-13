@@ -90,8 +90,7 @@ private:
     friend class DomainLookupByUUIDStringWorker;
     friend class DomainRestoreWorker;
     friend class DomainCreateWorker;
-    friend class DomainShutdown;
-
+    friend class DomainShutdownWorker;
     friend class NodeGetInfoWorker;
 
 };
