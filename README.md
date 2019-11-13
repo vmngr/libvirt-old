@@ -2,6 +2,12 @@
 
 # vmngr / libvirt
 
+![CI badge][cibadge]
+![License badge][licensebadge]
+![Contributors badge][contribadge]
+![Issues badge][issuesbadge]
+![PR badge][prbadge]
+
 Libvirt bindings for Node.js®.
 
 ## Example Usage
@@ -55,3 +61,9 @@ SOFTWARE.
 
 
 [cover]: cover.png "Cover image"
+
+[licensebadge]: https://img.shields.io/github/license/vmngr/libvirt "License badge"
+[cibadge]: https://github.com/vmngr/libvirt/workflows/CI/badge.svg "CI badge"
+[contribadge]: https://img.shields.io/github/contributors/vmngr/libvirt "Contributors badge"
+[issuesbadge]: https://img.shields.io/github/issues/vmngr/libvirt "Issues badge"
+[prbadge]: https://img.shields.io/github/issues-pr/vmngr/libvirt "PR badge"
