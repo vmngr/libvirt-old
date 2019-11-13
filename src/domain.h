@@ -1,5 +1,12 @@
-#ifndef __LIBVIRT_DOMAIN_H
-#define __LIBVIRT_DOMAIN_H
+/**
+ * Copyright 2019 Leon Rinkel <leon@rinkel.me> and vmngr/libvirt contributers.
+ * 
+ * This file is part of the vmngr/libvirt project and is subject to the MIT
+ * license as in the LICENSE file in the project root.
+ */
+
+#ifndef SRC_DOMAIN_H_
+#define SRC_DOMAIN_H_
 
 #include <napi.h>
 
@@ -7,18 +14,15 @@
 #include <libvirt/virterror.h>
 #include <libvirt/libvirt-domain.h>
 
-#include "hypervisor.h"
+#include "src/hypervisor.h"
 
-class Domain : public Napi::ObjectWrap<Domain>
-{
-public:
-
+class Domain : public Napi::ObjectWrap<Domain> {
+ public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    Domain(const Napi::CallbackInfo& info);
+    explicit Domain(const Napi::CallbackInfo& info);
     ~Domain(void);
 
-private:
-
+ private:
     static Napi::FunctionReference constructor;
 
     virDomainPtr domainPtr = nullptr;
@@ -38,7 +42,6 @@ private:
     friend class DomainCreateWorker;
     friend class DomainShutdownWorker;
     friend class DomainRestoreWorker;
-
 };
 
-#endif /* __LIBVIRT_DOMAIN_H */
+#endif  // SRC_DOMAIN_H_

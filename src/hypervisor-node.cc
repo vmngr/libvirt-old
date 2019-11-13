@@ -1,9 +1,15 @@
-#include "hypervisor.h"
+/**
+ * Copyright 2019 Leon Rinkel <leon@rinkel.me> and vmngr/libvirt contributers.
+ * 
+ * This file is part of the vmngr/libvirt project and is subject to the MIT
+ * license as in the LICENSE file in the project root.
+ */
 
-#include "worker.h"
+#include "src/hypervisor.h"
 
-static Napi::Value dummyCallback(const Napi::CallbackInfo& info)
-{
+#include "src/worker.h"
+
+static Napi::Value dummyCallback(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     return env.Undefined();
@@ -14,18 +20,15 @@ static Napi::Value dummyCallback(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class NodeGetInfoWorker : public Worker {
-public:
-
+ public:
     using Worker::Worker;
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int ret = virNodeGetInfo(hypervisor->conn, &nodeInfo);
         if (ret < 0) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object info = Napi::Object::New(Env());
@@ -42,14 +45,11 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     virNodeInfo nodeInfo;
-
 };
 
-Napi::Value Hypervisor::NodeGetInfo(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::NodeGetInfo(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 

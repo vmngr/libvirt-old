@@ -1,10 +1,16 @@
-#include "hypervisor.h"
+/**
+ * Copyright 2019 Leon Rinkel <leon@rinkel.me> and vmngr/libvirt contributers.
+ * 
+ * This file is part of the vmngr/libvirt project and is subject to the MIT
+ * license as in the LICENSE file in the project root.
+ */
 
-#include "worker.h"
-#include "domain.h"
+#include "src/hypervisor.h"
 
-static Napi::Value dummyCallback(const Napi::CallbackInfo& info)
-{
+#include "src/worker.h"
+#include "src/domain.h"
+
+static Napi::Value dummyCallback(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     return env.Undefined();
@@ -15,24 +21,20 @@ static Napi::Value dummyCallback(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainCreateXMLWorker : public Worker {
-public:
-
+ public:
     DomainCreateXMLWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        std::string domainXml
-    ) : Worker(callback, deferred, hypervisor),
-        domainXml(domainXml) {}
+        std::string domainXml)
+        : Worker(callback, deferred, hypervisor), domainXml(domainXml) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainPtr = virDomainCreateXML(hypervisor->conn, domainXml.c_str(), 0);
         if (!domainPtr) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object domain = Domain::constructor.New({
@@ -42,23 +44,19 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     std::string domainXml;
     virDomainPtr domainPtr;
-
 };
 
-Napi::Value Hypervisor::DomainCreateXML(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainCreateXML(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsString())
-    {
+    if (info.Length() <= 0 || !info[0].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string"));
         return deferred.Promise();
     }
@@ -77,24 +75,20 @@ Napi::Value Hypervisor::DomainCreateXML(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainDefineXMLWorker : public Worker {
-public:
-
+ public:
     DomainDefineXMLWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        std::string domainXml
-    ) : Worker(callback, deferred, hypervisor),
-        domainXml(domainXml) {}
+        std::string domainXml)
+        : Worker(callback, deferred, hypervisor), domainXml(domainXml) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainPtr = virDomainDefineXML(hypervisor->conn, domainXml.c_str());
         if (!domainPtr) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object domain = Domain::constructor.New({
@@ -104,23 +98,19 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     std::string domainXml;
     virDomainPtr domainPtr;
-
 };
 
-Napi::Value Hypervisor::DomainDefineXML(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainDefineXML(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsString())
-    {
+    if (info.Length() <= 0 || !info[0].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string"));
         return deferred.Promise();
     }
@@ -139,24 +129,20 @@ Napi::Value Hypervisor::DomainDefineXML(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainGetInfoWorker : public Worker {
-public:
-
+ public:
     DomainGetInfoWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int ret = virDomainGetInfo(domain->domainPtr, &domainInfo);
         if (ret < 0) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object info = Napi::Object::New(Env());
@@ -170,23 +156,19 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     Domain* domain;
     virDomainInfo domainInfo;
-
 };
 
-Napi::Value Hypervisor::DomainGetInfo(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainGetInfo(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
@@ -206,18 +188,15 @@ Napi::Value Hypervisor::DomainGetInfo(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainGetIDWorker : public Worker {
-public:
-
+ public:
     DomainGetIDWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         id = virDomainGetID(domain->domainPtr);
 
         /* Inactive domains dont't have an id, so virDomainGetID will return -1,
@@ -225,42 +204,37 @@ public:
          * "Unknown error". But in this case it might be better to just return
          * null as id. */
 
-        if (id == static_cast<unsigned int>(-1))
-        {
+        if (id == static_cast<unsigned int>(-1)) {
             virErrorPtr err = virGetLastError();
             if (err != NULL) SetError(std::string(err->message));
         }
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         // See comment above.
         if (id != static_cast<unsigned int>(-1))
             deferred.Resolve(Napi::Number::New(Env(), this->id));
-        else deferred.Resolve(Env().Undefined()); 
+        else
+            deferred.Resolve(Env().Undefined());
 
         Callback().Call({});
     }
 
-private:
-
+ private:
     Domain* domain;
     unsigned int id;
-
 };
 
-Napi::Value Hypervisor::DomainGetID(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainGetID(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
@@ -280,46 +254,38 @@ Napi::Value Hypervisor::DomainGetID(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainGetNameWorker : public Worker {
-public:
-
+ public:
     DomainGetNameWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainName = virDomainGetName(domain->domainPtr);
         if (domainName == NULL) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
         deferred.Resolve(Napi::String::New(Env(), this->domainName));
         Callback().Call({});
     }
 
-private:
-
+ private:
     Domain* domain;
     const char* domainName;
-
 };
 
-Napi::Value Hypervisor::DomainGetName(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainGetName(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
@@ -339,47 +305,39 @@ Napi::Value Hypervisor::DomainGetName(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainGetUUIDStringWorker : public Worker {
-public:
-
+ public:
     DomainGetUUIDStringWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int ret = virDomainGetUUIDString(domain->domainPtr, uuid);
         if (ret < 0) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
         deferred.Resolve(Napi::String::New(Env(), this->uuid,
             VIR_UUID_STRING_BUFLEN - 1));
         Callback().Call({});
     }
 
-private:
-
+ private:
     Domain* domain;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
 };
 
-Napi::Value Hypervisor::DomainGetUUIDString(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainGetUUIDString(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
@@ -399,24 +357,20 @@ Napi::Value Hypervisor::DomainGetUUIDString(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainLookupByIDWorker : public Worker {
-public:
-
+ public:
     DomainLookupByIDWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        int id
-    ) : Worker(callback, deferred, hypervisor),
-        id(id) {}
+        int id)
+        : Worker(callback, deferred, hypervisor), id(id) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainPtr = virDomainLookupByID(hypervisor->conn, id);
         if (domainPtr == NULL) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object domain = Domain::constructor.New({
@@ -426,23 +380,19 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     int id;
     virDomainPtr domainPtr;
-
 };
 
-Napi::Value Hypervisor::DomainLookupByID(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainLookupByID(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsNumber())
-    {
+    if (info.Length() <= 0 || !info[0].IsNumber()) {
         deferred.Reject(Napi::String::New(env, "Expected a number."));
         return deferred.Promise();
     }
@@ -461,24 +411,20 @@ Napi::Value Hypervisor::DomainLookupByID(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainLookupByNameWorker : public Worker {
-public:
-
+ public:
     DomainLookupByNameWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        std::string name
-    ) : Worker(callback, deferred, hypervisor),
-        name(name) {}
+        std::string name)
+        : Worker(callback, deferred, hypervisor), name(name) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainPtr = virDomainLookupByName(hypervisor->conn, name.c_str());
         if (domainPtr == NULL) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object domain = Domain::constructor.New({
@@ -488,23 +434,19 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     std::string name;
     virDomainPtr domainPtr;
-
 };
 
-Napi::Value Hypervisor::DomainLookupByName(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainLookupByName(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsString())
-    {
+    if (info.Length() <= 0 || !info[0].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string."));
         return deferred.Promise();
     }
@@ -523,24 +465,20 @@ Napi::Value Hypervisor::DomainLookupByName(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainLookupByUUIDStringWorker : public Worker {
-public:
-
+ public:
     DomainLookupByUUIDStringWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        std::string uuid
-    ) : Worker(callback, deferred, hypervisor),
-        uuid(uuid) {}
+        std::string uuid)
+        : Worker(callback, deferred, hypervisor), uuid(uuid) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         domainPtr = virDomainLookupByUUIDString(hypervisor->conn, uuid.c_str());
         if (domainPtr == NULL) SetVirError();
     }
 
-    void OnOK(void) override
-    {
+    void OnOK(void) override {
         Napi::HandleScope scope(Env());
 
         Napi::Object domain = Domain::constructor.New({
@@ -550,23 +488,20 @@ public:
         Callback().Call({});
     }
 
-private:
-
+ private:
     std::string uuid;
     virDomainPtr domainPtr;
-
 };
 
-Napi::Value Hypervisor::DomainLookupByUUIDString(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainLookupByUUIDString(
+    const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsString())
-    {
+    if (info.Length() <= 0 || !info[0].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string."));
         return deferred.Promise();
     }
@@ -585,45 +520,38 @@ Napi::Value Hypervisor::DomainLookupByUUIDString(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainSaveWorker : public Worker {
-public:
-
+ public:
     DomainSaveWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
         Domain* domain,
-        std::string filename
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain), filename(filename) {}
+        std::string filename)
+        : Worker(callback, deferred, hypervisor), domain(domain),
+          filename(filename) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int ret = virDomainSave(domain->domainPtr, filename.c_str());
         if (ret < 0) SetVirError();
     }
 
-private:
-
+ private:
     Domain* domain;
     std::string filename;
-
 };
 
-Napi::Value Hypervisor::DomainSave(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainSave(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
-    if (info.Length() <= 1 || !info[1].IsString())
-    {
+    if (info.Length() <= 1 || !info[1].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string."));
         return deferred.Promise();
     }
@@ -644,38 +572,31 @@ Napi::Value Hypervisor::DomainSave(const Napi::CallbackInfo& info)
  ******************************************************************************/
 
 class DomainRestoreWorker : public Worker {
-public:
-
+ public:
     DomainRestoreWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        std::string filename
-    ) : Worker(callback, deferred, hypervisor),
-        filename(filename) {}
+        std::string filename)
+        : Worker(callback, deferred, hypervisor), filename(filename) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int ret = virDomainRestore(hypervisor->conn, filename.c_str());
         if (ret < 0) SetVirError();
     }
 
-private:
-
+ private:
     std::string filename;
-
 };
 
-Napi::Value Hypervisor::DomainRestore(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainRestore(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsString())
-    {
+    if (info.Length() <= 0 || !info[0].IsString()) {
         deferred.Reject(Napi::String::New(env, "Expected a string."));
         return deferred.Promise();
     }
@@ -692,36 +613,33 @@ Napi::Value Hypervisor::DomainRestore(const Napi::CallbackInfo& info)
 /******************************************************************************
  * DomainCreate                                                               *
  ******************************************************************************/
+
 class DomainCreateWorker : public Worker {
-public:
+ public:
     DomainCreateWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int create = virDomainCreate(domain->domainPtr);
         if (create < 0) SetVirError();
     }
 
-private:
+ private:
     Domain* domain;
 };
 
-Napi::Value Hypervisor::DomainCreate(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainCreate(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }
@@ -735,39 +653,37 @@ Napi::Value Hypervisor::DomainCreate(const Napi::CallbackInfo& info)
 
     return deferred.Promise();
 }
+
 /******************************************************************************
  * DomainShutDown                                                             *
  ******************************************************************************/
+
 class DomainShutdownWorker : public Worker {
-public:
+ public:
     DomainShutdownWorker(
-        Napi::Function& callback,
+        Napi::Function& const callback,
         Napi::Promise::Deferred deferred,
         Hypervisor* hypervisor,
-        Domain* domain
-    ) : Worker(callback, deferred, hypervisor),
-        domain(domain) {}
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
 
-    void Execute(void) override
-    {
+    void Execute(void) override {
         int shutdown = virDomainShutdown(domain->domainPtr);
         if (shutdown < 0) SetVirError();
     }
 
-private:
+ private:
     Domain* domain;
 };
 
-Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info)
-{
+Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
-    if (info.Length() <= 0 || !info[0].IsObject())
-    {
+    if (info.Length() <= 0 || !info[0].IsObject()) {
         deferred.Reject(Napi::String::New(env, "Expected an object."));
         return deferred.Promise();
     }

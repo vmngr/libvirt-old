@@ -8,6 +8,7 @@
   "scripts": {
     "build": "node-gyp rebuild",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint/bindings": "styleguide/cpplint/cpplint.py src/*",
     "lint/examples": "tslint -p examples",
     "examples/list": "ts-node -P examples/tsconfig.json examples/list.ts",
     "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",

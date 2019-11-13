@@ -20,6 +20,11 @@
             "problemMatcher": [
                 "$tslint5"
             ]
+        },
+        {
+            "type": "npm",
+            "script": "lint/bindings",
+            "problemMatcher": []
         }
     ]
 }
