@@ -13,9 +13,9 @@ Libvirt bindings for Node.js®.
 ## Example Usage
 
 ```typescript
-import * as libvirt from "@vmngr/libvirt";
+import libvirt from "@vmngr/libvirt";
 
-const uri = "qemu+ssh:///";
+const uri = "qemu:///system";
 const hypervisor = new libvirt.Hypervisor({ uri });
 
 (async function() {
