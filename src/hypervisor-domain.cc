@@ -746,7 +746,8 @@ class DomainRebootWorker : public Worker {
         Hypervisor* hypervisor,
         Domain* domain,
         unsigned int flags)
-        : Worker(callback, deferred, hypervisor), domain(domain), flags(flags) {}
+        : Worker(callback, deferred, hypervisor), 
+          domain(domain), flags(flags) {}
 
     void Execute(void) override {
         int shutdown = virDomainReboot(domain->domainPtr, flags);
