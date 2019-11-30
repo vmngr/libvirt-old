@@ -746,7 +746,7 @@ class DomainRebootWorker : public Worker {
         Hypervisor* hypervisor,
         Domain* domain,
         unsigned int flags)
-        : Worker(callback, deferred, hypervisor), 
+        : Worker(callback, deferred, hypervisor),
           domain(domain), flags(flags) {}
 
     void Execute(void) override {
