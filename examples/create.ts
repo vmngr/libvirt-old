@@ -6,7 +6,7 @@ import { domainDescToXml, DomainDesc, DomainBuilder } from "../dist";
 import uuidv1 from 'uuid/v1';
 
 (async ()=>{
-    const uri = "qemu+ssh://root@libvirt_dev/system";
+    const uri = "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     // Connecting to our hypervisor
