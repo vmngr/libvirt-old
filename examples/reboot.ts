@@ -5,7 +5,7 @@ import libvirt from "../";
 
 (async () => {
 
-    const uri = "qemu:///system";
+    const uri = "qemu+ssh://root@libvirt_dev/system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     // Connecting to our hypervisor
@@ -15,7 +15,7 @@ import libvirt from "../";
         libvirt.ConnectListAllDomainsFlags.ACTIVE);
 
     if (activeDomains.length === 0) {
-        process.stdout.write("No domains for reboot :(");
+        process.stdout.write("No domains for reboot :( \n\n");
         return;
     }
 
