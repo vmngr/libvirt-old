@@ -734,6 +734,54 @@ class DomainGetXMLDescWorker : public Worker {
     char* xmlDesc;
 };
 
+/******************************************************************************
+ * DomainShutDown                                                             *
+ ******************************************************************************/
+
+class DomainRebootWorker : public Worker {
+ public:
+    DomainRebootWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor), domain(domain), flags(flags) {}
+
+    void Execute(void) override {
+        int shutdown = virDomainReboot(domain->domainPtr, flags);
+        if (shutdown < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainReboot(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int flags = 0;
+
+    DomainRebootWorker* worker = new DomainRebootWorker(
+        callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
 Napi::Value Hypervisor::DomainGetXMLDesc(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);

@@ -53,6 +53,12 @@ export class DomainBuilder {
         return this;
     }
 
+    setVcpu(vcpuCount: number): DomainBuilder {
+        if (!this.domainDesc.vcpu) this.domainDesc.vcpu = { placement: "static" };
+        this.domainDesc.vcpu.value = vcpuCount;
+        return this;
+    }
+
     build = (): DomainDesc => this.domainDesc;
 
 }

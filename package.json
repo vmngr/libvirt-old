@@ -14,7 +14,8 @@
     "examples/list": "ts-node -P examples/tsconfig.json examples/list.ts",
     "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",
     "examples/shutdown": "ts-node -P examples/tsconfig.json examples/shutdown.ts",
-    "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts"
+    "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts",
+    "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts"
   },
   "repository": {
     "type": "git",
@@ -45,8 +46,10 @@
   },
   "homepage": "https://github.com/vmngr/libvirt#readme",
   "dependencies": {
+    "@types/uuid": "^3.4.6",
     "bindings": "^1.5.0",
     "node-addon-api": "^1.7.1",
+    "uuid": "^3.3.3",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {

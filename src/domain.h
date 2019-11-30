@@ -41,6 +41,7 @@ class Domain : public Napi::ObjectWrap<Domain> {
     friend class DomainSaveWorker;
     friend class DomainCreateWorker;
     friend class DomainShutdownWorker;
+    friend class DomainRebootWorker;
     friend class DomainRestoreWorker;
     friend class DomainGetXMLDescWorker;
 };

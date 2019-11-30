@@ -43,6 +43,7 @@ export declare class Hypervisor {
     domainRestore(filename: string): Promise<void>;
     domainCreate(domain: Domain): Promise<void>;
     domainShutdown(domain: Domain): Promise<void>;
+    domainReboot(domain: Domain): Promise<void>;
     domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags):
         Promise<string>;
 
@@ -67,6 +68,15 @@ export declare const enum ConnectListAllDomainsFlags {
     NO_SNAPSHOT    = 8192,
     HAS_CHECKPOINT = 16384,
     NO_CHECKPOINT  = 32768,
+}
+
+export declare const enum DomainRebootFlagValues {
+    VIR_DOMAIN_REBOOT_DEFAULT        = 0,
+    VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = 1,
+    VIR_DOMAIN_REBOOT_GUEST_AGENT    = 2,
+    VIR_DOMAIN_REBOOT_INITCTL	     = 4,
+    VIR_DOMAIN_REBOOT_SIGNAL	     = 8,
+    VIR_DOMAIN_REBOOT_PARAVIRT	     = 16,
 }
 
 export declare const enum DomainGetXMLDescFlags {
