@@ -39,15 +39,18 @@ export const domainOsXml = {
         return os;
     },
 
+    // tslint:disable-next-line:no-any
     deserialize(os: any): DomainOsDesc {
         const osDesc: DomainOsDesc = { };
 
         if (os.type[0]) {
             osDesc.type = { };
-            if (os.type[0].$.arch) osDesc.type.arch =
-                os.type[0].$.arch;
-            if (os.type[0].$.machine) osDesc.type.machine =
-                os.type[0].$.machine;
+            if (os.type[0].$.arch) {
+                osDesc.type.arch = os.type[0].$.arch;
+            }
+            if (os.type[0].$.machine) {
+                osDesc.type.machine = os.type[0].$.machine;
+            }
             if (os.type[0]._) osDesc.type.value = os.type[0]._;
         }
 
@@ -90,6 +93,7 @@ export const domainDiskXml = {
         return disk;
     },
 
+    // tslint:disable-next-line:no-any
     deserialize(disk: any): DomainDiskDesc {
         const diskDesc: DomainDiskDesc = { };
 
@@ -98,24 +102,29 @@ export const domainDiskXml = {
 
         if (disk.driver[0]) {
             diskDesc.driver = { };
-            if (disk.driver[0].$.name) diskDesc.driver.name =
-                disk.driver[0].$.name;
-            if (disk.driver[0].$.type) diskDesc.driver.type =
-                disk.driver[0].$.type;
+            if (disk.driver[0].$.name) {
+                diskDesc.driver.name = disk.driver[0].$.name;
+            }
+            if (disk.driver[0].$.type) {
+                diskDesc.driver.type = disk.driver[0].$.type;
+            }
         }
 
         if (disk.source[0]) {
             diskDesc.source = { };
-            if (disk.source[0].$.file) diskDesc.source.file =
-                disk.source[0].$.file;
+            if (disk.source[0].$.file) {
+                diskDesc.source.file = disk.source[0].$.file;
+            }
         }
 
         if (disk.target[0]) {
             diskDesc.target = { };
-            if (disk.target[0].$.dev) diskDesc.target.dev =
-                disk.target[0].$.dev;
-            if (disk.target[0].$.bus) diskDesc.target.bus =
-                disk.target[0].$.bus;
+            if (disk.target[0].$.dev) {
+                diskDesc.target.dev = disk.target[0].$.dev;
+            }
+            if (disk.target[0].$.bus) {
+                diskDesc.target.bus = disk.target[0].$.bus;
+            }
         }
 
         return diskDesc;
@@ -155,6 +164,7 @@ export const domainInterfaceXml = {
         return iface;
     },
 
+    // tslint:disable-next-line:no-any
     deserialize(iface: any): DomainInterfaceDesc {
         const interfaceDesc: DomainInterfaceDesc = { };
 
@@ -162,20 +172,23 @@ export const domainInterfaceXml = {
 
         if (iface.source[0]) {
             interfaceDesc.source = { };
-            if (iface.source[0].$.network) interfaceDesc.source.network =
-                iface.source[0].$.network;
+            if (iface.source[0].$.network) {
+                interfaceDesc.source.network = iface.source[0].$.network;
+            }
         }
 
         if (iface.mac[0]) {
             interfaceDesc.mac = { };
-            if (iface.mac[0].$.address) interfaceDesc.mac.address =
-                iface.mac[0].$.address;
+            if (iface.mac[0].$.address) {
+                interfaceDesc.mac.address = iface.mac[0].$.address;
+            }
         }
 
         if (iface.model[0]) {
             interfaceDesc.model = { };
-            if (iface.model[0].$.type) interfaceDesc.model.type =
-                iface.model[0].$.type;
+            if (iface.model[0].$.type) {
+                interfaceDesc.model.type = iface.model[0].$.type;
+            }
         }
 
         return interfaceDesc;
@@ -197,6 +210,7 @@ export const domainGraphicsXml = {
         return graphics;
     },
 
+    // tslint:disable-next-line:no-any
     deserialize(graphics: any): DomainGraphicsDesc {
         const graphicsDesc: DomainGraphicsDesc = { };
 
@@ -298,51 +312,53 @@ export async function domainDescFromXml(xml: string): Promise<DomainDesc> {
     const domainDesc: DomainDesc = { };
     const parsed = await xml2js.parseStringPromise(xml);
 
-    if (!parsed.domain) throw ""; /** @todo */
+    if (!parsed.domain) throw new Error("Unable to parse domain xml");
 
     if (parsed.domain.$.type) domainDesc.type = parsed.domain.$.type;
     if (parsed.domain.$.id) domainDesc.id = parsed.domain.$.id;
 
-    if (parsed.domain.name && parsed.domain.name[0])
+    if (parsed.domain.name && parsed.domain.name[0]) {
         domainDesc.name = parsed.domain.name[0];
-    if (parsed.domain.uuid && parsed.domain.uuid[0])
+    }
+    if (parsed.domain.uuid && parsed.domain.uuid[0]) {
         domainDesc.uuid = parsed.domain.uuid[0];
+    }
 
     if (parsed.domain.memory && parsed.domain.memory[0]) {
-        if (typeof parsed.domain.memory[0] == "object") {
+        if (typeof parsed.domain.memory[0] === "object") {
             domainDesc.memory = {
-                value: Number.parseInt(parsed.domain.memory[0]._),
+                value: Number(parsed.domain.memory[0]._),
                 unit: parsed.domain.memory[0].$.unit,
             };
-        } else if (typeof parsed.domain.memory[0] == "string") {
+        } else if (typeof parsed.domain.memory[0] === "string") {
             domainDesc.memory = {
-                value: Number.parseInt(parsed.domain.memory[0])
+                value: Number(parsed.domain.memory[0])
             };
         }
     }
 
     if (parsed.domain.currentMemory && parsed.domain.currentMemory[0]) {
-        if (typeof parsed.domain.currentMemory[0] == "object") {
+        if (typeof parsed.domain.currentMemory[0] === "object") {
             domainDesc.currentMemory = {
-                value: Number.parseInt(parsed.domain.currentMemory[0]._),
+                value: Number(parsed.domain.currentMemory[0]._),
                 unit: parsed.domain.currentMemory[0].$.unit,
             };
-        } else if (typeof parsed.domain.currentMemory[0] == "string") {
+        } else if (typeof parsed.domain.currentMemory[0] === "string") {
             domainDesc.currentMemory = {
-                value: Number.parseInt(parsed.domain.currentMemory[0]),
+                value: Number(parsed.domain.currentMemory[0]),
             };
         }
     }
 
     if (parsed.domain.vcpu && parsed.domain.vcpu[0]) {
-        if (typeof parsed.domain.vcpu[0] == "object") {
+        if (typeof parsed.domain.vcpu[0] === "object") {
             domainDesc.vcpu = {
-                value: Number.parseInt(parsed.domain.vcpu[0]._),
+                value: Number(parsed.domain.vcpu[0]._),
                 placement: parsed.domain.vcpu[0].$.placement,
             };
-        } else if (typeof parsed.domain.vcpu[0] == "string") {
+        } else if (typeof parsed.domain.vcpu[0] === "string") {
             domainDesc.vcpu = {
-                value: Number.parseInt(parsed.domain.vcpu[0]),
+                value: Number(parsed.domain.vcpu[0]),
             };
         }
     }
