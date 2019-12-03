@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: recursive
 
@@ -17,7 +17,10 @@ jobs:
       with:
         node-version: 10.x
 
-    - name: Install libvirt
+    - name: apt update
+      run: sudo apt-get update
+
+    - name: install libvirt
       run: sudo apt-get install -y libvirt-dev
 
     - name: npm install
@@ -28,3 +31,6 @@ jobs:
 
     - name: lint/examples
       run: npm run lint/examples
+
+    - name: test
+      run: npm run test
