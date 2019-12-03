@@ -17,7 +17,10 @@ jobs:
       with:
         node-version: 10.x
 
-    - name: Install libvirt
+    - name: apt update
+      run: sudo apt-get update
+
+    - name: install libvirt
       run: sudo apt-get install -y libvirt-dev
 
     - name: npm install
