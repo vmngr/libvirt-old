@@ -46,10 +46,22 @@ export declare class Hypervisor {
     domainReboot(domain: Domain): Promise<void>;
     domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags):
         Promise<string>;
+    domainInterfaceStats(domain: Domain, device: string): Promise<DomainInterfaceStatsObject>;
 
     nodeGetInfo(): Promise<NodeInfo>;
 
 }
+
+export declare interface DomainInterfaceStatsObject {
+    rx_bytes: number;
+    rx_packets: number;
+    rx_errs: number;
+    rx_drop: number;
+    tx_bytes: number;
+    tx_packets: number;
+    tx_errs: number;
+    tx_drop: number;
+};
 
 export declare const enum ConnectListAllDomainsFlags {
     ACTIVE         = 1,
