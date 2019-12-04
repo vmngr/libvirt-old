@@ -38,6 +38,8 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("domainReboot", &Hypervisor::DomainReboot),
         InstanceMethod("domainRestore", &Hypervisor::DomainRestore),
         InstanceMethod("domainGetXMLDesc", &Hypervisor::DomainGetXMLDesc),
+        InstanceMethod("domainInterfaceStats",
+            &Hypervisor::DomainInterfaceStats),
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
     });

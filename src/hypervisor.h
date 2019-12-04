@@ -39,6 +39,7 @@ class DomainCreateWorker;
 class DomainShutdownWorker;
 class DomainRebootWorker;
 class DomainGetXMLDescWorker;
+class DomainInterfaceStatsWorker;
 
 class NodeGetInfoWorker;
 
@@ -70,6 +71,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     Napi::Value DomainReboot(const Napi::CallbackInfo& info);
     Napi::Value DomainRestore(const Napi::CallbackInfo& info);
     Napi::Value DomainGetXMLDesc(const Napi::CallbackInfo& info);
+    Napi::Value DomainInterfaceStats(const Napi::CallbackInfo& info);
 
     Napi::Value NodeGetInfo(const Napi::CallbackInfo& info);
 
@@ -101,6 +103,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     friend class DomainShutdownWorker;
     friend class DomainRebootWorker;
     friend class DomainGetXMLDescWorker;
+    friend class DomainInterfaceStatsWorker;
 
     friend class NodeGetInfoWorker;
 };

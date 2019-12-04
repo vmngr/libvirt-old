@@ -4,7 +4,6 @@
  * This file is part of the vmngr/libvirt project and is subject to the MIT
  * license as in the LICENSE file in the project root.
  */
-
 #include "src/hypervisor.h"
 #include "src/worker.h"
 #include "src/domain.h"
@@ -808,6 +807,84 @@ Napi::Value Hypervisor::DomainGetXMLDesc(const Napi::CallbackInfo& info) {
 
     DomainGetXMLDescWorker* worker =
         new DomainGetXMLDescWorker(callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainInterfaceStats                                                       *
+ ******************************************************************************/
+class DomainInterfaceStatsWorker : public Worker {
+ public:
+    DomainInterfaceStatsWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device) {}
+
+    void Execute(void) override {
+        int ret = virDomainInterfaceStats(domain->domainPtr,
+                    device.c_str(), &ifstats, size_t(0));
+        if (ret < 0) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object info = Napi::Object::New(Env());
+
+        info.Set("rx_bytes", Napi::Number::New(Env(), ifstats.rx_bytes));
+        info.Set("rx_packets", Napi::Number::New(Env(), ifstats.rx_packets));
+        info.Set("rx_errs", Napi::Number::New(Env(), ifstats.rx_errs));
+        info.Set("rx_drop", Napi::Number::New(Env(), ifstats.rx_drop));
+        info.Set("tx_bytes", Napi::Number::New(Env(), ifstats.tx_bytes));
+        info.Set("tx_packets", Napi::Number::New(Env(), ifstats.tx_packets));
+        info.Set("tx_errs", Napi::Number::New(Env(), ifstats.tx_errs));
+        info.Set("tx_drop", Napi::Number::New(Env(), ifstats.tx_drop));
+
+        deferred.Resolve(info);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virDomainInterfaceStatsStruct ifstats;
+};
+
+Napi::Value Hypervisor::DomainInterfaceStats(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() == 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a interface device name at 2nd arg."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+    DomainInterfaceStatsWorker* worker =
+        new DomainInterfaceStatsWorker(callback, deferred, this,
+        domain, device);
     worker->Queue();
 
     return deferred.Promise();
