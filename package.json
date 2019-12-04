@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "gypfile": true,
   "scripts": {
+    "postinstall": "tsc",
     "build": "node-gyp rebuild && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint/bindings": "styleguide/cpplint/cpplint.py src/*",
