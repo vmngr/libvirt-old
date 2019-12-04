@@ -5,7 +5,7 @@ import libvirt from "../";
 
 (async () => {
 
-    const uri = "qemu:///system";
+    const uri = "qemu+ssh://root@libvirt_dev/system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     await hypervisor.connectOpen();

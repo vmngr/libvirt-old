@@ -15,7 +15,8 @@
     "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",
     "examples/shutdown": "ts-node -P examples/tsconfig.json examples/shutdown.ts",
     "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts",
-    "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts"
+    "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts",
+    "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts"
   },
   "repository": {
     "type": "git",
