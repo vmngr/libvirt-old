@@ -837,14 +837,14 @@ class DomainInterfaceStatsWorker : public Worker {
 
         Napi::Object info = Napi::Object::New(Env());
 
-        info.Set("rx_bytes", Napi::Number::New(Env(), ifstats.rx_bytes));
-        info.Set("rx_packets", Napi::Number::New(Env(), ifstats.rx_packets));
-        info.Set("rx_errs", Napi::Number::New(Env(), ifstats.rx_errs));
-        info.Set("rx_drop", Napi::Number::New(Env(), ifstats.rx_drop));
-        info.Set("tx_bytes", Napi::Number::New(Env(), ifstats.tx_bytes));
-        info.Set("tx_packets", Napi::Number::New(Env(), ifstats.tx_packets));
-        info.Set("tx_errs", Napi::Number::New(Env(), ifstats.tx_errs));
-        info.Set("tx_drop", Napi::Number::New(Env(), ifstats.tx_drop));
+        info.Set("rx_bytes", Napi::String::New(Env(), std::to_string(ifstats.rx_bytes)));
+        // info.Set("rx_packets", Napi::Number::New(Env(), ifstats.rx_packets));
+        // info.Set("rx_errs", Napi::Number::New(Env(), ifstats.rx_errs));
+        // info.Set("rx_drop", Napi::Number::New(Env(), ifstats.rx_drop));
+        // info.Set("tx_bytes", Napi::Number::New(Env(), ifstats.tx_bytes));
+        // info.Set("tx_packets", Napi::Number::New(Env(), ifstats.tx_packets));
+        // info.Set("tx_errs", Napi::Number::New(Env(), ifstats.tx_errs));
+        // info.Set("tx_drop", Napi::Number::New(Env(), ifstats.tx_drop));
 
         deferred.Resolve(info);
         Callback().Call({});
