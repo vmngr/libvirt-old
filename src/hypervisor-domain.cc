@@ -828,7 +828,7 @@ class DomainInterfaceStatsWorker : public Worker {
 
     void Execute(void) override {
         int ret = virDomainInterfaceStats(domain->domainPtr,
-                    device.c_str(), &ifstats, sizeof(ifstats) == -1);
+                    device.c_str(), &ifstats, sizeof(ifstats));
         if (ret < 0) SetVirError();
     }
 
