@@ -837,7 +837,8 @@ class DomainInterfaceStatsWorker : public Worker {
 
         Napi::Object info = Napi::Object::New(Env());
 
-        info.Set("rx_bytes", Napi::String::New(Env(), std::to_string(ifstats.rx_bytes)));
+        info.Set("rx_bytes", Napi::Number::New(Env(),
+            (double) ifstats.rx_bytes)));
         // info.Set("rx_packets", Napi::Number::New(Env(), ifstats.rx_packets));
         // info.Set("rx_errs", Napi::Number::New(Env(), ifstats.rx_errs));
         // info.Set("rx_drop", Napi::Number::New(Env(), ifstats.rx_drop));
