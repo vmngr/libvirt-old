@@ -47,11 +47,22 @@ export declare class Hypervisor {
     domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags):
         Promise<string>;
     domainInterfaceStats(domain: Domain, device: string): Promise<DomainInterfaceStatsObject>;
+    domainInterfaceTune(domain: Domain, device: string, params: DomainTuneParams): Promise<void>;
 
     nodeGetInfo(): Promise<NodeInfo>;
 
 }
 
+export declare interface DomainTuneParams {
+    inbound?: DomainTuneItem;
+    outbound?: DomainTuneItem;
+}
+export declare interface DomainTuneItem {
+    average: number;
+    peak: number;
+    burst: number;
+    floor: number;
+}
 export declare interface DomainInterfaceStatsObject {
     rx_bytes: number;
     rx_packets: number;

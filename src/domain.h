@@ -45,6 +45,16 @@ class Domain : public Napi::ObjectWrap<Domain> {
     friend class DomainRestoreWorker;
     friend class DomainGetXMLDescWorker;
     friend class DomainInterfaceStatsWorker;
+    friend class DomainInterfaceTuneWorker;
+};
+
+// Idk. Maybe include header file from libvirt/util
+typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
+struct _virNetDevBandwidthRate {
+    unsigned long long average;  /* kbytes/s */
+    unsigned long long peak;     /* kbytes/s */
+    unsigned long long floor;    /* kbytes/s */
+    unsigned long long burst;    /* kbytes */
 };
 
 #endif  // SRC_DOMAIN_H_

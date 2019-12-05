@@ -889,3 +889,112 @@ Napi::Value Hypervisor::DomainInterfaceStats(const Napi::CallbackInfo& info) {
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainInterfaceTuneWorker                                                       *
+ ******************************************************************************/
+class DomainInterfaceTuneWorker : public Worker {
+ public:
+    DomainInterfaceTuneWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device,
+        virTypedParameterPtr params,
+        int nparams,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device), params(params),
+         nparams(nparams), flags(flags) {}
+
+    void Execute(void) override {
+        int ret = virDomainSetInterfaceParameters(domain->domainPtr,
+                  device.c_str(), params, nparams, flags);
+        if (ret < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virTypedParameterPtr params;
+    int nparams;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainInterfaceTune(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    virTypedParameterPtr params = NULL;
+    virNetDevBandwidthRate inbound;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    int nparams = 0;
+    int maxparams = 0;
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() >= 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a device interface name by second arg."));
+        return deferred.Promise();
+    } else if (info.Length() >= 3 && !info[2].IsObject()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected tune object (inbound?, outbound?) by 3rd arg."));
+        return deferred.Promise();
+    }
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+    Napi::Object interfaceTune = info[2].As<Napi::Object>();
+
+    if (interfaceTune.Has("inbound") &&
+        interfaceTune.Get("inbound").IsObject() ) {
+        Napi::Object inboundObj = interfaceTune.Get("inbound")
+                                  .As<Napi::Object>();
+
+        inbound.average = inboundObj.Get("average")
+                          .As<Napi::Number>().Uint32Value();
+        inbound.peak = inboundObj.Get("peak")
+                          .As<Napi::Number>().Uint32Value();
+
+        inbound.burst = inboundObj.Get("burst")
+                        .As<Napi::Number>().Uint32Value();
+        inbound.floor = inboundObj.Get("average")
+                        .As<Napi::Number>().Uint32Value();
+
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                          inbound.average);
+
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                          inbound.peak);
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                          inbound.burst);
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                          inbound.floor);
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainInterfaceTuneWorker* worker =
+        new DomainInterfaceTuneWorker(callback, deferred, this,
+        domain, device, params, nparams, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
