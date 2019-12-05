@@ -970,7 +970,7 @@ Napi::Value Hypervisor::DomainInterfaceTune(const Napi::CallbackInfo& info) {
 
         inbound.burst = inboundObj.Get("burst")
                         .As<Napi::Number>().ToNumber().Uint32Value();
-        inbound.floor = inboundObj.Get("average")
+        inbound.floor = inboundObj.Get("floor")
                         .As<Napi::Number>().ToNumber().Uint32Value();
 
         virTypedParamsAddUInt(&params, &nparams,
