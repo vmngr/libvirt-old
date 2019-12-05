@@ -58,8 +58,8 @@ export declare interface DomainTuneParams {
     outbound?: DomainTuneItem;
 }
 export declare interface DomainTuneItem {
-    average: number;
-    peak: number;
+    average: any;
+    peak: any;
     burst: number;
     floor: number;
 }

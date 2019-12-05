@@ -964,14 +964,14 @@ Napi::Value Hypervisor::DomainInterfaceTune(const Napi::CallbackInfo& info) {
                                   .As<Napi::Object>();
 
         inbound.average = inboundObj.Get("average")
-                          .As<Napi::Number>().Uint32Value();
+                          .As<Napi::Number>().ToNumber().Uint32Value();
         inbound.peak = inboundObj.Get("peak")
-                          .As<Napi::Number>().Uint32Value();
+                          .As<Napi::Number>().ToNumber().Uint32Value();
 
         inbound.burst = inboundObj.Get("burst")
-                        .As<Napi::Number>().Uint32Value();
+                        .As<Napi::Number>().ToNumber().Uint32Value();
         inbound.floor = inboundObj.Get("average")
-                        .As<Napi::Number>().Uint32Value();
+                        .As<Napi::Number>().ToNumber().Uint32Value();
 
         virTypedParamsAddUInt(&params, &nparams,
                           &maxparams, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,

@@ -18,7 +18,8 @@
     "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts",
     "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts",
     "examples/interface_stats": "ts-node -P examples/tsconfig.json examples/interface_stats.ts",
-    "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts"
+    "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts",
+    "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts"
   },
   "repository": {
     "type": "git",
