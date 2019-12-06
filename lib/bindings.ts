@@ -48,6 +48,7 @@ export declare class Hypervisor {
         Promise<string>;
     domainInterfaceStats(domain: Domain, device: string): Promise<DomainInterfaceStatsObject>;
     domainInterfaceTune(domain: Domain, device: string, params: DomainTuneParams): Promise<void>;
+    domainInterfaceTuneCurrent(domain:Domain, device: string): Promise<DomainTuneParams>;
 
     nodeGetInfo(): Promise<NodeInfo>;
 
