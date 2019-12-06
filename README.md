@@ -71,6 +71,31 @@ const hypervisor = new libvirt.Hypervisor({ uri });
 })();
 ```
 
+## Install
+
+### Debian / Ubuntu
+```bash
+$ sudo apt install build-essential libvirt-dev
+$ npm i @vmngr/libvirt
+```
+
+### MacOS
+Install Homebrew and Xcode first if not already installed.
+```bash
+$ brew install libvirt
+$ npm i @vmngr/libvirt
+```
+
+## Contribute
+
+Any contribution is welcome! To check wether your contribution conforms our style guide run the following tasks:
+```bash
+$ pip install cppcheck # required once
+$ npm run lint/bindings
+$ npm run lint/lib
+$ npm run lint/examples
+```
+
 ---
 
 MIT License
