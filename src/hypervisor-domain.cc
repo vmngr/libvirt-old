@@ -998,3 +998,116 @@ Napi::Value Hypervisor::DomainInterfaceTune(const Napi::CallbackInfo& info) {
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainInterfaceTuneCurrentWorker                                           *
+ ******************************************************************************/
+class DomainInterfaceTuneCurrentWorker : public Worker {
+ public:
+    DomainInterfaceTuneCurrentWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device,
+        virTypedParameterPtr params,
+        int nparams,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device), params(params),
+         nparams(nparams), flags(flags) {}
+
+    void Execute(void) override {
+        int ret = virDomainGetInterfaceParameters(domain->domainPtr,
+                          device.c_str(), NULL, &nparams, flags);
+        if (ret != 0) SetVirError();
+
+        if (nparams == 0) {
+            throw Napi::Error::New(Env(),
+                "Unable to get number of interface parameters");
+        }
+
+        params = (virTypedParameterPtr) malloc(sizeof(*params));
+
+        virDomainGetInterfaceParameters(domain->domainPtr, device.c_str(), params, &nparams, flags);
+
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object currentTune = Napi::Object::New(Env());
+        currentTune.Set("inbound", Napi::Object::New(Env()));
+        currentTune.Set("outbound", Napi::Object::New(Env()));
+
+        for (int i = 0; i < nparams; i++) {
+            char *token;
+            std::string search = ".";
+            char *rest = params[i].field;
+
+            token = strtok_r(params[i].field, search.c_str(), &rest);
+            std::string bound = std::string(token);
+            token = strtok_r(NULL, search.c_str(), &rest);
+            std::string type = std::string(token);
+            // No more things to tokenize
+            Napi::Object boundObject = currentTune.Get(bound)
+                                       .As<Napi::Object>();
+            Napi::Number tuneValue = Napi::Number::New(Env(),
+                                     params[i].value.ul);
+
+            boundObject.Set(std::string(type), tuneValue);
+        }
+        deferred.Resolve(currentTune);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virTypedParameterPtr params;
+    int nparams;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainInterfaceTuneCurrent
+            (const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    virTypedParameterPtr params = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    int nparams = 0;
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env,
+                        "Expected a device name by 2nd arg."));
+
+        return deferred.Promise();
+    } else if (info.Length() >= 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a device interface name by second arg."));
+        return deferred.Promise();
+    }
+
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainInterfaceTuneCurrentWorker* worker =
+        new DomainInterfaceTuneCurrentWorker(callback, deferred, this,
+        domain, device, params, nparams, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}

@@ -42,6 +42,8 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
             &Hypervisor::DomainInterfaceStats),
         InstanceMethod("domainInterfaceTune",
             &Hypervisor::DomainInterfaceTune),
+        InstanceMethod("domainTuneCurrent",
+            &Hypervisor::DomainInterfaceTuneCurrent),
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
     });
 

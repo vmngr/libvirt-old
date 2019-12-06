@@ -4,7 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/ilya/vmngr-development/dev_xml/node_modules/node-addon-api"
+                "/home/ilya/vmngr-development/dev_xml/node_modules/node-addon-api",
+                "/usr/include",
+                "/usr/include/c++"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
