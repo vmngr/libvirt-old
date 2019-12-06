@@ -1,5 +1,5 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
@@ -11,12 +11,14 @@
         },
         {
             "type": "npm",
-            "script": "examples/list",
-            "problemMatcher": []
+            "script": "lint/examples",
+            "problemMatcher": [
+                "$tslint5"
+            ]
         },
         {
             "type": "npm",
-            "script": "lint/examples",
+            "script": "lint/lib",
             "problemMatcher": [
                 "$tslint5"
             ]
@@ -28,12 +30,22 @@
         },
         {
             "type": "npm",
+            "script": "examples/list",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
             "script": "examples/start",
             "problemMatcher": []
         },
         {
             "type": "npm",
             "script": "examples/shutdown",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "examples/builder",
             "problemMatcher": []
         }
     ]

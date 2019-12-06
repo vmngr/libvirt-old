@@ -1,11 +1,11 @@
 import chalk from "chalk";
 import process from "process";
 
-import * as libvirt from "../";
+import libvirt from "../";
 
 (async () => {
 
-    const uri = "qemu:///system";
+    const uri = process.env.LIBVIRT_URI || "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     await hypervisor.connectOpen();
