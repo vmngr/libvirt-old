@@ -1,4 +1,4 @@
-import { domainDescToXml, DomainDesc, DomainBuilder, domainDescFromXml } from "../dist";
+import { domainDescToXml, DomainBuilder, domainDescFromXml } from "../dist";
 
 (async () => {
 
