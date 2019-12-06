@@ -1,6 +1,6 @@
 {
   "name": "@vmngr/libvirt",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Libvirt bindings for Node.js®",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
