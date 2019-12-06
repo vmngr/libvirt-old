@@ -5,6 +5,7 @@
  * license as in the LICENSE file in the project root.
  */
 #include "src/hypervisor.h"
+#include <glib-2.0/glib.h>
 #include "src/worker.h"
 #include "src/domain.h"
 
@@ -1026,11 +1027,16 @@ class DomainInterfaceTuneCurrentWorker : public Worker {
             throw Napi::Error::New(Env(),
                 "Unable to get number of interface parameters");
         }
+        printf("Point 1 \n");
 
-        params = (virTypedParameterPtr) malloc(sizeof(*params));
+        // params = new virTypedParameterPtr;
+        params = static_cast<virTypedParameterPtr>(g_malloc0_n(nparams, sizeof(*params)));
 
-        virDomainGetInterfaceParameters(domain->domainPtr, device.c_str(), params, &nparams, flags);
+        printf("Point 2 \n");
 
+        virDomainGetInterfaceParameters(domain->domainPtr,
+                 "vnet0", params, &nparams, flags);
+        printf("Point 3\n");
     }
 
     void OnOK(void) override {

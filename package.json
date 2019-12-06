@@ -19,7 +19,8 @@
     "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts",
     "examples/interface_stats": "ts-node -P examples/tsconfig.json examples/interface_stats.ts",
     "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts",
-    "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts"
+    "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts",
+    "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts"
   },
   "repository": {
     "type": "git",
