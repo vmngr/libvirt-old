@@ -91,6 +91,8 @@ $ npm i @vmngr/libvirt
 Any contribution is welcome! To check wether your contribution conforms our style guide run the following tasks:
 ```bash
 $ pip install cppcheck # required once
+$ git submodule update --init --recursive # required once
+
 $ npm run lint/bindings
 $ npm run lint/lib
 $ npm run lint/examples
