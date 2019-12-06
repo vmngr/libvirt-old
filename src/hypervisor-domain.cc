@@ -1026,12 +1026,8 @@ class DomainInterfaceTuneCurrentWorker : public Worker {
                 "Unable to get number of interface parameters");
         }
 
-        printf("Point 1 \n");
-
         // params = new virTypedParameterPtr;
         params = (virTypedParameterPtr) g_malloc0_n(nparams, sizeof(*params));
-
-        printf("Point 2 \n");
 
         int reret = virDomainGetInterfaceParameters(domain->domainPtr,
                  device.c_str(), params, &nparams, flags);
