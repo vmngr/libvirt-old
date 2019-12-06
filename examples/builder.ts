@@ -1,6 +1,15 @@
-import { domainDescToXml, DomainBuilder, domainDescFromXml } from "../dist";
+import libvirt, {
+    DomainBuilder,
+    domainDescToXml,
+    domainDescFromXml,
+} from "../dist";
 
 (async () => {
+
+    const uri = process.env.LIBVIRT_URI || "qemu:///system";
+    const hypervisor = new libvirt.Hypervisor({ uri });
+
+    await hypervisor.connectOpen();
 
     const template = await domainDescFromXml(
 `<domain type="kvm">
@@ -41,6 +50,6 @@ import { domainDescToXml, DomainBuilder, domainDescFromXml } from "../dist";
         .build();
 
         const xml = domainDescToXml(domain);
-        console.log(xml);
+        await hypervisor.domainDefineXML(xml);
 
 })();
