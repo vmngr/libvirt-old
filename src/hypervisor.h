@@ -113,5 +113,5 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
 
     friend class NodeGetInfoWorker;
 };
-
+char *      getTypedParamValue(virTypedParameterPtr item);
 #endif  // SRC_HYPERVISOR_H_

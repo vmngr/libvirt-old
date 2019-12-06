@@ -5,7 +5,9 @@
  * license as in the LICENSE file in the project root.
  */
 
+#include <glib-2.0/glib.h>
 #include "src/hypervisor.h"
+
 
 Napi::FunctionReference Hypervisor::constructor;
 Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
@@ -81,4 +83,41 @@ Hypervisor::Hypervisor(const Napi::CallbackInfo& info)
 
     Napi::String uri = options.Get("uri").As<Napi::String>();
     this->uri = std::string(uri.Utf8Value());
+}
+
+char * getTypedParamValue(virTypedParameterPtr item) {
+    char *str = NULL;
+    switch (item->type) {
+    case VIR_TYPED_PARAM_INT:
+        str = g_strdup_printf("%d", item->value.i);
+        break;
+
+    case VIR_TYPED_PARAM_UINT:
+        str = g_strdup_printf("%u", item->value.ui);
+        break;
+
+    case VIR_TYPED_PARAM_LLONG:
+        str = g_strdup_printf("%lld", item->value.l);
+        break;
+
+    case VIR_TYPED_PARAM_ULLONG:
+        str = g_strdup_printf("%llu", item->value.ul);
+        break;
+
+    case VIR_TYPED_PARAM_DOUBLE:
+        str = g_strdup_printf("%f", item->value.d);
+        break;
+
+    case VIR_TYPED_PARAM_BOOLEAN:
+        str = g_strdup(item->value.b ? "yes" : "no");
+        break;
+
+    case VIR_TYPED_PARAM_STRING:
+        str = g_strdup(item->value.s);
+        break;
+    default:
+        str = "Not known type";
+    }
+
+    return str;
 }

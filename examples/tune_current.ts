@@ -5,8 +5,8 @@ import util from 'util';
 import libvirt from "../";
 
 (async () => {
-    const vmName = "debian9-vm1", // VM name
-          ifName = "vnet0";        // VM Interface Name
+    const vmName = "debian9-vm2", // VM name
+          ifName = "vnet1";        // VM Interface Name
 
     const uri = "qemu+ssh://root@libvirt_dev/system";
     const hypervisor = new libvirt.Hypervisor({ uri });
@@ -22,7 +22,7 @@ import libvirt from "../";
         return;
     }
 
-    const tune = await hypervisor.domainInterfaceTuneCurrent(activeDomain, 'vnet0');
+    const tune = await hypervisor.domainInterfaceTuneCurrent(activeDomain, ifName);
     
     console.log(tune);
 })();

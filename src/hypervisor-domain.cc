@@ -1021,22 +1021,23 @@ class DomainInterfaceTuneCurrentWorker : public Worker {
     void Execute(void) override {
         int ret = virDomainGetInterfaceParameters(domain->domainPtr,
                           device.c_str(), NULL, &nparams, flags);
-        if (ret != 0) SetVirError();
-
-        if (nparams == 0) {
+        if (ret != 0) {
             throw Napi::Error::New(Env(),
                 "Unable to get number of interface parameters");
         }
+
         printf("Point 1 \n");
 
         // params = new virTypedParameterPtr;
-        params = static_cast<virTypedParameterPtr>(g_malloc0_n(nparams, sizeof(*params)));
+        params = (virTypedParameterPtr) g_malloc0_n(nparams, sizeof(*params));
 
         printf("Point 2 \n");
 
-        virDomainGetInterfaceParameters(domain->domainPtr,
-                 "vnet0", params, &nparams, flags);
-        printf("Point 3\n");
+        int reret = virDomainGetInterfaceParameters(domain->domainPtr,
+                 device.c_str(), params, &nparams, flags);
+        if (reret != 0){
+            SetVirError();
+        }
     }
 
     void OnOK(void) override {
@@ -1058,11 +1059,12 @@ class DomainInterfaceTuneCurrentWorker : public Worker {
             // No more things to tokenize
             Napi::Object boundObject = currentTune.Get(bound)
                                        .As<Napi::Object>();
-            Napi::Number tuneValue = Napi::Number::New(Env(),
-                                     params[i].value.ul);
+            char *str = getTypedParamValue(&params[i]);
+            Napi::Number tuneValue = Napi::Number::New(Env(), atof(str));
 
             boundObject.Set(std::string(type), tuneValue);
         }
+
         deferred.Resolve(currentTune);
         Callback().Call({});
     }
