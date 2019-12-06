@@ -39,6 +39,14 @@ export class DomainBuilder {
         return this;
     }
 
+    removeDisks(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "disk");
+        }
+        return this;
+    }
+
     addInterface(interfaceDesc: DomainInterfaceDesc): DomainBuilder {
         if (!this.domainDesc.devices) this.domainDesc.devices = [ ];
         this.domainDesc.devices.push({
@@ -46,10 +54,26 @@ export class DomainBuilder {
         return this;
     }
 
+    removeInterfaces(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "interface");
+        }
+        return this;
+    }
+
     addGraphics(graphicsDesc: DomainGraphicsDesc): DomainBuilder {
         if (!this.domainDesc.devices) this.domainDesc.devices = [ ];
         this.domainDesc.devices.push({
             type: "graphics", graphics: graphicsDesc });
+        return this;
+    }
+
+    removeGraphics(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "graphics");
+        }
         return this;
     }
 
