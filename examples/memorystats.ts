@@ -1,7 +1,8 @@
 import chalk from "chalk";
 import process from "process";
-import _ from 'lodash';
-import prettyBytes from 'pretty-bytes';
+import _ from "lodash";
+import bytes from "bytes";
+import { prettifyMemoryUsage } from '../dist/domain-utils'
 
 import libvirt, { Domain } from "../";
 
@@ -24,12 +25,9 @@ import libvirt, { Domain } from "../";
     }   
     setInterval(async () => {
         const memoryStats = await hypervisor.domainMemoryStats(activeDomain);
-        const pretty = _.mapValues(memoryStats, (mem, key) => {
-            if (key == "last_update") { return mem; }
-
-            return prettyBytes(mem * 1024);
-        })
-        console.log(pretty);
+        const pretty = prettifyMemoryUsage(memoryStats);
+        // console.log(pretty);
+        console.log(memoryStats);
 
         // Pretty is just an example.
     }, 1000)

@@ -1131,6 +1131,9 @@ class DomainMemoryStatsWorker : public Worker {
          domain(domain), flags(flags) {}
 
     void Execute(void) override {
+        int ret = virDomainSetMemoryStatsPeriod(domain->domainPtr, 1, flags);
+        if (ret < 0 ) SetVirError();
+
         nr_stats = virDomainMemoryStats(domain->domainPtr, memstats,
                     VIR_DOMAIN_MEMORY_STAT_NR, 0);
         if (nr_stats < 0) SetVirError();
@@ -1140,6 +1143,8 @@ class DomainMemoryStatsWorker : public Worker {
         Napi::HandleScope scope(Env());
 
         Napi::Object info = Napi::Object::New(Env());
+        unsigned long long actual = 0;
+        unsigned long long available = 0;
         for (int i = 0; i < nr_stats; i++) {
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
                 info.Set("swap_in", Napi::Number::New(Env(), memstats[i].val));
@@ -1151,12 +1156,16 @@ class DomainMemoryStatsWorker : public Worker {
                 info.Set("minor_fault", Napi::Number::New(Env(), memstats[i].val));
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_UNUSED)
                 info.Set("unused", Napi::Number::New(Env(), memstats[i].val));
-            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE) {
                 info.Set("available", Napi::Number::New(Env(), memstats[i].val));
+                available = memstats[i].val;
+            }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE)
                 info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
-            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON)
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
                 info.Set("actual", Napi::Number::New(Env(), memstats[i].val));
+                actual = memstats[i].val;
+            }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS)
                 info.Set("rss", Napi::Number::New(Env(), memstats[i].val));
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE)
@@ -1168,7 +1177,8 @@ class DomainMemoryStatsWorker : public Worker {
             // if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL)
             //     info.Set("hugetlb_pgfail", Napi::Number::New(Env(), memstats[i].val));
         }
-
+        
+        info.Set("used", Napi::Number::New(Env(), actual - available));
         deferred.Resolve(info);
         Callback().Call({});
     }
