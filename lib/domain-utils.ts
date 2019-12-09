@@ -23,4 +23,5 @@ import bytes from "bytes";
      const pretty = _.mapValues(memoryStats, (value, key) => {
          return bytes(value * 1024, { unit: "GB" });
      })
+     return pretty;
  }
