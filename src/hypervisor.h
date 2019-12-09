@@ -45,6 +45,7 @@ class DomainInterfaceTuneCurrentWorker;
 class DomainMemoryStatsWorker;
 
 class NodeGetInfoWorker;
+class NodeGetMemoryStatsWorker;
 
 class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
  public:
