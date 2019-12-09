@@ -22,7 +22,7 @@ import { NodeMemoryStatsStruct } from ".";
 
  export function prettifyNodeMemoryUsage(memoryStats: NodeMemoryStatsStruct) {
      const pretty = _.mapValues(memoryStats, (value, key) => {
-         return bytes(value * 1024, { unit: "MB" });
+         return bytes(value * 1024, { unit: "GB" });
      })
      return pretty;
  }
