@@ -24,8 +24,8 @@ import libvirt from "../";
 
     await hypervisor.domainInterfaceTune(activeDomain, "vnet0", {
         inbound: {
-          average: "1000",
-          peak: "1250",
+          average: 1000,
+          peak: 1250,
           burst: 0,
           floor: 0
         }

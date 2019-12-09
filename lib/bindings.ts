@@ -49,7 +49,7 @@ export declare class Hypervisor {
     domainInterfaceStats(domain: Domain, device: string): Promise<DomainInterfaceStatsObject>;
     domainInterfaceTune(domain: Domain, device: string, params: DomainTuneParams): Promise<void>;
     domainInterfaceTuneCurrent(domain:Domain, device: string): Promise<DomainTuneParams>;
-
+    domainMemoryStats(domain: Domain): Promise<any>;
     nodeGetInfo(): Promise<NodeInfo>;
 
 }

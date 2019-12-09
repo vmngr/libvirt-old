@@ -20,7 +20,8 @@
     "examples/interface_stats": "ts-node -P examples/tsconfig.json examples/interface_stats.ts",
     "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts",
     "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts",
-    "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts"
+    "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts",
+    "examples/memorystats": "ts-node -P examples/tsconfig.json examples/memorystats.ts"
   },
   "repository": {
     "type": "git",
@@ -51,11 +52,14 @@
   },
   "homepage": "https://github.com/vmngr/libvirt#readme",
   "dependencies": {
-    "@types/uuid": "^3.4.6",
     "@types/bindings": "^1.3.0",
+    "@types/lodash": "^4.14.149",
+    "@types/uuid": "^3.4.6",
     "@types/xml2js": "^0.4.5",
     "bindings": "^1.5.0",
+    "lodash": "^4.17.15",
     "node-addon-api": "^1.7.1",
+    "pretty-bytes": "^5.3.0",
     "uuid": "^3.3.3",
     "xml2js": "^0.4.22"
   },

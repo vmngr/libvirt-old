@@ -47,6 +47,7 @@ class Domain : public Napi::ObjectWrap<Domain> {
     friend class DomainInterfaceStatsWorker;
     friend class DomainInterfaceTuneWorker;
     friend class DomainInterfaceTuneCurrentWorker;
+    friend class DomainMemoryStatsWorker;
 };
 
 // Idk. Maybe include header file from libvirt/util

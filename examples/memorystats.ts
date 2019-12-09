@@ -1,8 +1,9 @@
 import chalk from "chalk";
 import process from "process";
-import util from 'util';
+import _ from 'lodash';
+import prettyBytes from 'pretty-bytes';
 
-import libvirt from "../";
+import libvirt, { Domain } from "../";
 
 (async () => {
     const vmName = "debian9-vm1", // VM name
@@ -20,9 +21,14 @@ import libvirt from "../";
     if (!activeDomain){
         console.log(`Error on lookup for ${chalk.blue(vmName)}`);
         return;
-    }
+    }   
+    setInterval(async () => {
+        const memoryStats = await hypervisor.domainMemoryStats(activeDomain);
+        const pretty = _.mapValues(memoryStats, (mem, key) => {
+            if (key == "last_update") { return mem; }
 
-    const tune = await hypervisor.domainInterfaceTuneCurrent(activeDomain, ifName);
-    
-    console.log(tune);
+            return prettyBytes(mem * 1024);
+        })
+        console.log(pretty);
+    }, 1000)
 })();

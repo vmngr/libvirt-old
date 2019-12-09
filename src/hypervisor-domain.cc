@@ -1115,3 +1115,99 @@ Napi::Value Hypervisor::DomainInterfaceTuneCurrent
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainMemoryStats                                                          *
+ ******************************************************************************/
+class DomainMemoryStatsWorker : public Worker {
+ public:
+    DomainMemoryStatsWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), flags(flags) {}
+
+    void Execute(void) override {
+        nr_stats = virDomainMemoryStats(domain->domainPtr, memstats,
+                    VIR_DOMAIN_MEMORY_STAT_NR, 0);
+        if (nr_stats < 0) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object info = Napi::Object::New(Env());
+        for (int i = 0; i < nr_stats; i++) {
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
+                info.Set("swap_in", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_OUT)
+                info.Set("swap_out", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT)
+                info.Set("major_fault", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT)
+                info.Set("minor_fault", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_UNUSED)
+                info.Set("unused", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
+                info.Set("available", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE)
+                info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON)
+                info.Set("actual", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS)
+                info.Set("rss", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE)
+                info.Set("last_update", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_DISK_CACHES)
+                info.Set("disk_caches", Napi::Number::New(Env(), memstats[i].val));
+            // if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC)
+            //     info.Set("hugetlb_pgalloc", Napi::Number::New(Env(), memstats[i].val));
+            // if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL)
+            //     info.Set("hugetlb_pgfail", Napi::Number::New(Env(), memstats[i].val));
+        }
+
+        deferred.Resolve(info);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    unsigned int flags;
+    int nr_stats;
+    virDomainMemoryStatStruct memstats[VIR_DOMAIN_MEMORY_STAT_NR];
+};
+
+Napi::Value Hypervisor::DomainMemoryStats(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() < 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() > 1) {
+        deferred.Reject(Napi::String::New(env, "Method doesn't require more args."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    DomainMemoryStatsWorker* worker =
+        new DomainMemoryStatsWorker(callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
