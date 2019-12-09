@@ -26,9 +26,9 @@ import libvirt, { Domain } from "../";
 
     setInterval(async () => {
         const memoryStats = await hypervisor.domainMemoryStats(activeDomain);
-        // const pretty = prettifyMemoryUsage(memoryStats);
-        // console.log(pretty);
-        console.log(memoryStats);
+        const pretty = prettifyMemoryUsage(memoryStats);
+        console.log(pretty);
+        // console.log(memoryStats);
 
         // Pretty is just an example.
     }, 1000)

@@ -14,9 +14,9 @@ import { NodeMemoryStatsStruct } from ".";
  export function prettifyMemoryUsage(memoryStats: any) {
     const pretty = _.mapValues(memoryStats, (value, key) => {
         if (key == "last_update") { return value; }
-        return bytes(value * 1024, { unit: "GB"});
+        return bytes(value * 1024, { unit: "MB"});
     })
-    pretty.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
+    pretty.percentage =  Number((memoryStats.used / memoryStats.available * 100).toFixed(2));
     return pretty;
  }
 

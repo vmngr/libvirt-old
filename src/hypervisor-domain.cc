@@ -1145,7 +1145,7 @@ class DomainMemoryStatsWorker : public Worker {
         Napi::Object info = Napi::Object::New(Env());
         unsigned long long actual = 0;
         unsigned long long usable = 0;
-        unsigned long long curmem = 0;
+        unsigned long long available = 0;
         for (int i = 0; i < nr_stats; i++) {
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
                 info.Set("swap_in", Napi::Number::New(Env(), memstats[i].val));
@@ -1159,6 +1159,7 @@ class DomainMemoryStatsWorker : public Worker {
                 info.Set("unused", Napi::Number::New(Env(), memstats[i].val));
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE) {
                 info.Set("available", Napi::Number::New(Env(), memstats[i].val));
+                available = memstats[i].val;
             }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE) {
                 info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
@@ -1170,7 +1171,6 @@ class DomainMemoryStatsWorker : public Worker {
             }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS) {
                 info.Set("rss", Napi::Number::New(Env(), memstats[i].val));
-                curmem = memstats[i].val;
             }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE)
                 info.Set("last_update", Napi::Number::New(Env(), memstats[i].val));
