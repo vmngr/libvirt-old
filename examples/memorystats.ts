@@ -30,5 +30,7 @@ import libvirt, { Domain } from "../";
             return prettyBytes(mem * 1024);
         })
         console.log(pretty);
+
+        // Pretty is just an example.
     }, 1000)
 })();
