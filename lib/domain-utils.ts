@@ -12,7 +12,7 @@ import bytes from "bytes";
 
  export function prettifyMemoryUsage(memoryStats: any) {
     memoryStats.used = memoryStats.actual - memoryStats.available;
-    memoryStats.percentage =  Number(((memoryStats.used / memoryStats.actual) * 100).toFixed(2));
+    memoryStats.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
     const pretty = _.mapValues(memoryStats, (value, key) => {
         if (key == "last_update") { return value; }
         if (key == "percentage") { return value; }
