@@ -23,9 +23,10 @@ import libvirt, { Domain } from "../";
         console.log(`Error on lookup for ${chalk.blue(vmName)}`);
         return;
     }   
+
     setInterval(async () => {
         const memoryStats = await hypervisor.domainMemoryStats(activeDomain);
-        const pretty = prettifyMemoryUsage(memoryStats);
+        // const pretty = prettifyMemoryUsage(memoryStats);
         // console.log(pretty);
         console.log(memoryStats);
 

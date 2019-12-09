@@ -1143,7 +1143,6 @@ class DomainMemoryStatsWorker : public Worker {
         Napi::HandleScope scope(Env());
 
         Napi::Object info = Napi::Object::New(Env());
-        unsigned long long actual = 0;
         unsigned long long curmem = 0;
         for (int i = 0; i < nr_stats; i++) {
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
@@ -1163,7 +1162,6 @@ class DomainMemoryStatsWorker : public Worker {
                 info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
                 info.Set("actual", Napi::Number::New(Env(), memstats[i].val));
-                actual = memstats[i].val;
             }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS) {
                 info.Set("rss", Napi::Number::New(Env(), memstats[i].val));

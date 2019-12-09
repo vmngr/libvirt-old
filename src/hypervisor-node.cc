@@ -8,6 +8,7 @@
 #include "src/hypervisor.h"
 
 #include "src/worker.h"
+#include <glib-2.0/glib.h>
 
 static Napi::Value dummyCallback(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
@@ -57,6 +58,64 @@ Napi::Value Hypervisor::NodeGetInfo(const Napi::CallbackInfo& info) {
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
 
     NodeGetInfoWorker* worker = new NodeGetInfoWorker(callback, deferred, this);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************************************
+ * NodeGetMemoryStats                                                         *
+ ******************************************************************************/
+
+class NodeGetMemoryStatsWorker : public Worker {
+ public:
+    using Worker::Worker;
+
+    void Execute(void) override {
+        int cellNum = -1; // Get all field
+        int ret = virNodeGetMemoryStats(hypervisor->conn, cellNum, NULL, &nparams,0);
+        if (ret != 0) SetVirError();
+        params = (virNodeMemoryStatsPtr) g_malloc0_n(nparams, sizeof(*params));
+        ret = virNodeGetMemoryStats(hypervisor->conn, cellNum, params, &nparams, 0);
+        if (ret != 0) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object info = Napi::Object::New(Env());
+        for (int i = 0; i < nparams; i++){
+            info.Set(params[i].field, Napi::Number::New(Env(), params[i].value));
+        }
+        deferred.Resolve(info);
+        Callback().Call({});
+    }
+
+ private:
+    virNodeMemoryStatsPtr params;
+    int nparams;
+};
+
+Napi::Value Hypervisor::NodeGetMemoryStats(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    NodeGetMemoryStatsWorker* worker = new NodeGetMemoryStatsWorker(callback, deferred, this);
     worker->Queue();
 
     return deferred.Promise();
