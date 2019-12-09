@@ -21,7 +21,8 @@
     "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts",
     "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts",
     "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts",
-    "examples/memorystats": "ts-node -P examples/tsconfig.json examples/memorystats.ts"
+    "examples/memorystats": "ts-node -P examples/tsconfig.json examples/memorystats.ts",
+    "examples/node_memory": "ts-node -P examples/tsconfig.json examples/node_memory.ts"
   },
   "repository": {
     "type": "git",

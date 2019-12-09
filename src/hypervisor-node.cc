@@ -62,27 +62,19 @@ Napi::Value Hypervisor::NodeGetInfo(const Napi::CallbackInfo& info) {
 
     return deferred.Promise();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /******************************************************************************
  * NodeGetMemoryStats                                                         *
  ******************************************************************************/
 
 class NodeGetMemoryStatsWorker : public Worker {
  public:
-    using Worker::Worker;
+    NodeGetMemoryStatsWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        virNodeMemoryStatsPtr params,
+        int nparams)
+        : Worker(callback, deferred, hypervisor) {}
 
     void Execute(void) override {
         int cellNum = -1; // Get all field
@@ -113,9 +105,12 @@ Napi::Value Hypervisor::NodeGetMemoryStats(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
+    int nparams = 0;
+    virNodeMemoryStatsPtr params;
+
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     Napi::Function callback = Napi::Function::New(env, dummyCallback);
-    NodeGetMemoryStatsWorker* worker = new NodeGetMemoryStatsWorker(callback, deferred, this);
+    NodeGetMemoryStatsWorker* worker = new NodeGetMemoryStatsWorker(callback, deferred, this, params, nparams);
     worker->Queue();
 
     return deferred.Promise();
