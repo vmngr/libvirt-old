@@ -7,3 +7,5 @@ export * from "./domain-desc";
 export * from "./domain-xml";
 // Contains a builder class to construct domain descriptions.
 export * from "./domain-builder";
+// Contain helper functions like prettify domain stats methods
+export * from "./domain-utils"
