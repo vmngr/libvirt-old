@@ -53,10 +53,16 @@ export declare class Hypervisor {
 
 
     nodeGetInfo(): Promise<NodeInfo>;
-    nodeGetMemoryStats(): Promise<any>;
+    nodeGetMemoryStats(): Promise<NodeMemoryStatsStruct>;
 
 }
 
+export declare interface NodeMemoryStatsStruct {
+    total: number;
+    free: number;
+    buffers: number;
+    cached: number;
+}
 export declare interface DomainTuneParams {
     inbound?: DomainTuneItem;
     outbound?: DomainTuneItem;
