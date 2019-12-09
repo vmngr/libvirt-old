@@ -11,12 +11,16 @@ import _ from "lodash";
 import bytes from "bytes";
 
  export function prettifyMemoryUsage(memoryStats: any) {
-    memoryStats.used = memoryStats.actual - memoryStats.available;
-    memoryStats.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
     const pretty = _.mapValues(memoryStats, (value, key) => {
         if (key == "last_update") { return value; }
-        if (key == "percentage") { return value; }
         return bytes(value * 1024, { unit: "GB"});
     })
+    memoryStats.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
     return pretty;
+ }
+
+ export function prettifyNodeMemoryUsage(memoryStats: any) {
+     const pretty = _.mapValues(memoryStats, (value, key) => {
+         return bytes(value * 1024, { unit: "GB" });
+     })
  }
