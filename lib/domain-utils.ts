@@ -9,17 +9,18 @@
 
 import _ from "lodash";
 import bytes from "bytes";
+import { NodeMemoryStatsStruct } from ".";
 
  export function prettifyMemoryUsage(memoryStats: any) {
     const pretty = _.mapValues(memoryStats, (value, key) => {
         if (key == "last_update") { return value; }
         return bytes(value * 1024, { unit: "GB"});
     })
-    memoryStats.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
+    pretty.percentage =  Number((memoryStats.used / memoryStats.actual * 100).toFixed(2));
     return pretty;
  }
 
- export function prettifyNodeMemoryUsage(memoryStats: any) {
+ export function prettifyNodeMemoryUsage(memoryStats: NodeMemoryStatsStruct) {
      const pretty = _.mapValues(memoryStats, (value, key) => {
          return bytes(value * 1024, { unit: "GB" });
      })

@@ -1143,6 +1143,8 @@ class DomainMemoryStatsWorker : public Worker {
         Napi::HandleScope scope(Env());
 
         Napi::Object info = Napi::Object::New(Env());
+        unsigned long long actual = 0;
+        unsigned long long usable = 0;
         unsigned long long curmem = 0;
         for (int i = 0; i < nr_stats; i++) {
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
@@ -1158,10 +1160,13 @@ class DomainMemoryStatsWorker : public Worker {
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE) {
                 info.Set("available", Napi::Number::New(Env(), memstats[i].val));
             }
-            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE)
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE) {
                 info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
+                usable = memstats[i].val;
+            }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
                 info.Set("actual", Napi::Number::New(Env(), memstats[i].val));
+                actual = memstats[i].val;
             }
             if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS) {
                 info.Set("rss", Napi::Number::New(Env(), memstats[i].val));
@@ -1177,7 +1182,7 @@ class DomainMemoryStatsWorker : public Worker {
             //     info.Set("hugetlb_pgfail", Napi::Number::New(Env(), memstats[i].val));
         }
         
-        info.Set("used", Napi::Number::New(Env(), curmem));
+        info.Set("used", Napi::Number::New(Env(), actual - usable));
         deferred.Resolve(info);
         Callback().Call({});
     }
