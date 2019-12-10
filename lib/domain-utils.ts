@@ -26,3 +26,19 @@ import { NodeMemoryStatsStruct } from ".";
      })
      return pretty;
  }
+
+ export function prettifyCpuUsage(prev: any, current: any) {
+    let sum: any = {};
+    _.keys(prev).map((keyName: string, index: number)=>{
+        if (keyName == "total") return;
+        const key_diff = current[keyName] - prev[keyName];
+        const total_time_diff = current['total'] - prev['total'];
+        sum = {
+            ...sum,
+            [keyName]: key_diff / total_time_diff * 100
+        }
+     });
+     sum.usage = sum.user + sum.system;
+     return sum;
+
+ }

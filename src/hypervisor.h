@@ -46,6 +46,7 @@ class DomainMemoryStatsWorker;
 
 class NodeGetInfoWorker;
 class NodeGetMemoryStatsWorker;
+class NodeCpuStatsWorker;
 
 class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
  public:
@@ -82,6 +83,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
 
     Napi::Value NodeGetInfo(const Napi::CallbackInfo& info);
     Napi::Value NodeGetMemoryStats(const Napi::CallbackInfo& info);
+    Napi::Value NodeCpuStats(const Napi::CallbackInfo& info);
 
  private:
     static Napi::FunctionReference constructor;
@@ -118,6 +120,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
 
     friend class NodeGetInfoWorker;
     friend class NodeGetMemoryStatsWorker;
+    friend class NodeCpuStatsWorker;
 };
 char *      getTypedParamValue(virTypedParameterPtr item);
 #endif  // SRC_HYPERVISOR_H_

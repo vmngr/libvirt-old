@@ -51,6 +51,7 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo),
         InstanceMethod("nodeGetMemoryStats", &Hypervisor::NodeGetMemoryStats),
+        InstanceMethod("nodeCpuStats", &Hypervisor::NodeCpuStats),
     });
 
     constructor = Napi::Persistent(func);

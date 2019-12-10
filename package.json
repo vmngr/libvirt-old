@@ -22,7 +22,8 @@
     "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts",
     "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts",
     "examples/memorystats": "ts-node -P examples/tsconfig.json examples/memorystats.ts",
-    "examples/node_memory": "ts-node -P examples/tsconfig.json examples/node_memory.ts"
+    "examples/node_memory": "ts-node -P examples/tsconfig.json examples/node_memory.ts",
+    "examples/node_cpustats": "ts-node -P examples/tsconfig.json examples/node_cpustats.ts"
   },
   "repository": {
     "type": "git",

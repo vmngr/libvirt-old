@@ -54,6 +54,7 @@ export declare class Hypervisor {
 
     nodeGetInfo(): Promise<NodeInfo>;
     nodeGetMemoryStats(): Promise<NodeMemoryStatsStruct>;
+    nodeCpuStats(percentage?: boolean):Promise<any>;
 
 }
 
