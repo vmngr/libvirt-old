@@ -39,10 +39,26 @@ export class DomainBuilder {
         return this;
     }
 
+    removeDisks(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "disk");
+        }
+        return this;
+    }
+
     addInterface(interfaceDesc: DomainInterfaceDesc): DomainBuilder {
         if (!this.domainDesc.devices) this.domainDesc.devices = [ ];
         this.domainDesc.devices.push({
             type: "interface", interface: interfaceDesc });
+        return this;
+    }
+
+    removeInterfaces(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "interface");
+        }
         return this;
     }
 
@@ -56,6 +72,12 @@ export class DomainBuilder {
     setVcpu(vcpuCount: number): DomainBuilder {
         if (!this.domainDesc.vcpu) this.domainDesc.vcpu = { placement: "static" };
         this.domainDesc.vcpu.value = vcpuCount;
+
+    removeGraphics(): DomainBuilder {
+        if (this.domainDesc.devices) {
+            this.domainDesc.devices = this.domainDesc.devices
+                .filter((device) => device.type !== "graphics");
+        }
         return this;
     }
 
