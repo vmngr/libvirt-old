@@ -72,7 +72,7 @@ export class DomainBuilder {
     setVcpu(vcpuCount: number): DomainBuilder {
         if (!this.domainDesc.vcpu) this.domainDesc.vcpu = { placement: "static" };
         this.domainDesc.vcpu.value = vcpuCount;
-
+    }
     removeGraphics(): DomainBuilder {
         if (this.domainDesc.devices) {
             this.domainDesc.devices = this.domainDesc.devices
