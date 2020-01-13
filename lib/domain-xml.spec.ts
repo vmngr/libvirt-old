@@ -7,439 +7,439 @@
  * @brief Tests for domain-xml.ts.
  */
 
-import { expect } from "chai";
-import xml2js from "xml2js";
+// import { expect } from "chai";
+// import xml2js from "xml2js";
 
-import {
-    DomainOsDesc,
-    DomainDiskDesc,
-    DomainInterfaceDesc,
-    DomainGraphicsDesc,
-    DomainDesc
-} from "./domain-desc";
-import {
-    domainOsXml,
-    domainDiskXml,
-    domainInterfaceXml,
-    domainGraphicsXml,
-    domainDescToXml,
-    domainDescFromXml
-} from "./domain-xml";
+// import {
+//     DomainOsDesc,
+//     DomainDiskDesc,
+//     DomainInterfaceDesc,
+//     DomainGraphicsDesc,
+//     DomainDesc
+// } from "./domain-desc";
+// import {
+//     domainOsXml,
+//     domainDiskXml,
+//     domainInterfaceXml,
+//     domainGraphicsXml,
+//     domainDescToXml,
+//     domainDescFromXml
+// } from "./domain-xml";
 
-describe("DomainOs", () => {
+// describe("DomainOs", () => {
 
-    describe("serialize", () => {
+//     describe("serialize", () => {
 
-        it("should work", () => {
+//         it("should work", () => {
 
-            const os = domainOsXml.serialize({
-                type: { arch: "x86_64", machine: "q35", value: "hvm" },
-                boot: { dev: "hd" },
-            });
+//             const os = domainOsXml.serialize({
+//                 type: { arch: "x86_64", machine: "q35", value: "hvm" },
+//                 boot: { dev: "hd" },
+//             });
 
-            const builder = new xml2js.Builder({ headless: true });
-            const actualXml = builder.buildObject({ os });
+//             const builder = new xml2js.Builder({ headless: true });
+//             const actualXml = builder.buildObject({ os });
 
-            const expectedXml =
-`<os>
-  <type arch="x86_64" machine="q35">hvm</type>
-  <boot dev="hd"/>
-</os>`;
+//             const expectedXml =
+// `<os>
+//   <type arch="x86_64" machine="q35">hvm</type>
+//   <boot dev="hd"/>
+// </os>`;
 
-            expect(actualXml).to.equal(expectedXml);
+//             expect(actualXml).to.equal(expectedXml);
 
-        });
+//         });
 
-    });
+//     });
 
-    describe("deserialize", () => {
+//     describe("deserialize", () => {
 
-        it("should work", async () => {
+//         it("should work", async () => {
 
-            const parsed = await xml2js.parseStringPromise(
-`<os>
-  <type arch="x86_64" machine="q35">hvm</type>
-  <boot dev="hd"/>
-</os>`);
-            const actualOsDesc = domainOsXml.deserialize(parsed.os);
+//             const parsed = await xml2js.parseStringPromise(
+// `<os>
+//   <type arch="x86_64" machine="q35">hvm</type>
+//   <boot dev="hd"/>
+// </os>`);
+//             const actualOsDesc = domainOsXml.deserialize(parsed.os);
 
-            const expectedOsDesc: DomainOsDesc = {
-                type: { arch: "x86_64", machine: "q35", value: "hvm" },
-                boot: { dev: "hd" },
-            };
+//             const expectedOsDesc: DomainOsDesc = {
+//                 type: { arch: "x86_64", machine: "q35", value: "hvm" },
+//                 boot: { dev: "hd" },
+//             };
 
-            expect(actualOsDesc).to.deep.equal(expectedOsDesc);
+//             expect(actualOsDesc).to.deep.equal(expectedOsDesc);
 
-        });
+//         });
 
-    });
+//     });
 
-});
+// });
 
-describe("DomainDisk", () => {
+// describe("DomainDisk", () => {
 
-    describe("serialize", () => {
+//     describe("serialize", () => {
 
-        it("should work", () => {
+//         it("should work", () => {
 
-            const disk = domainDiskXml.serialize({
-                type: "file", device: "disk",
-                driver: { name: "qemu", type: "qcow2" },
-                source: { file: "/home/leon/test1.img" },
-                target: { dev: "vda", bus: "virtio" },
-            });
+//             const disk = domainDiskXml.serialize({
+//                 type: "file", device: "disk",
+//                 driver: { name: "qemu", type: "qcow2" },
+//                 source: { file: "/home/leon/test1.img" },
+//                 target: { dev: "vda", bus: "virtio" },
+//             });
 
-            const builder = new xml2js.Builder({ headless: true });
-            const actualXml = builder.buildObject({ disk });
+//             const builder = new xml2js.Builder({ headless: true });
+//             const actualXml = builder.buildObject({ disk });
 
-            const expectedXml =
-`<disk type="file" device="disk">
-  <driver name="qemu" type="qcow2"/>
-  <source file="/home/leon/test1.img"/>
-  <target dev="vda" bus="virtio"/>
-</disk>`;
+//             const expectedXml =
+// `<disk type="file" device="disk">
+//   <driver name="qemu" type="qcow2"/>
+//   <source file="/home/leon/test1.img"/>
+//   <target dev="vda" bus="virtio"/>
+// </disk>`;
 
-            expect(actualXml).to.equal(expectedXml);
+//             expect(actualXml).to.equal(expectedXml);
 
-        });
+//         });
 
-    });
+//     });
 
-    describe("deserialize", () => {
+//     describe("deserialize", () => {
 
-        it("should work", async () => {
+//         it("should work", async () => {
 
-            const parsed = await xml2js.parseStringPromise(
-`<disk type="file" device="disk">
-  <driver name="qemu" type="qcow2"/>
-  <source file="/home/leon/test1.img"/>
-  <target dev="vda" bus="virtio"/>
-</disk>`);
-            const actualDiskDesc = domainDiskXml.deserialize(parsed.disk);
+//             const parsed = await xml2js.parseStringPromise(
+// `<disk type="file" device="disk">
+//   <driver name="qemu" type="qcow2"/>
+//   <source file="/home/leon/test1.img"/>
+//   <target dev="vda" bus="virtio"/>
+// </disk>`);
+//             const actualDiskDesc = domainDiskXml.deserialize(parsed.disk);
 
-            const expectedDiskDesc: DomainDiskDesc = {
-                type: "file", device: "disk",
-                driver: { name: "qemu", type: "qcow2" },
-                source: { file: "/home/leon/test1.img" },
-                target: { dev: "vda", bus: "virtio" },
-            };
+//             const expectedDiskDesc: DomainDiskDesc = {
+//                 type: "file", device: "disk",
+//                 driver: { name: "qemu", type: "qcow2" },
+//                 source: { file: "/home/leon/test1.img" },
+//                 target: { dev: "vda", bus: "virtio" },
+//             };
 
-            expect(actualDiskDesc).to.deep.equal(expectedDiskDesc);
+//             expect(actualDiskDesc).to.deep.equal(expectedDiskDesc);
 
-        });
+//         });
 
-    });
+//     });
 
-});
+// });
 
-describe("DomainInterface", () => {
+// describe("DomainInterface", () => {
 
-    describe("serialize", () => {
+//     describe("serialize", () => {
 
-        it("should work", () => {
+//         it("should work", () => {
 
-            const iface = domainInterfaceXml.serialize({
-                type: "network",
-                source: { network: "default" },
-                mac: { address: "52:54:00:8e:c6:5f" },
-                model: { type: "virtio" },
-            });
+//             const iface = domainInterfaceXml.serialize({
+//                 type: "network",
+//                 source: { network: "default" },
+//                 mac: { address: "52:54:00:8e:c6:5f" },
+//                 model: { type: "virtio" },
+//             });
 
-            const builder = new xml2js.Builder({ headless: true });
-            const actualXml = builder.buildObject({ interface: iface });
+//             const builder = new xml2js.Builder({ headless: true });
+//             const actualXml = builder.buildObject({ interface: iface });
 
-            const expectedXml =
-`<interface type="network">
-  <source network="default"/>
-  <mac address="52:54:00:8e:c6:5f"/>
-  <model type="virtio"/>
-</interface>`;
+//             const expectedXml =
+// `<interface type="network">
+//   <source network="default"/>
+//   <mac address="52:54:00:8e:c6:5f"/>
+//   <model type="virtio"/>
+// </interface>`;
 
-            expect(actualXml).to.equal(expectedXml);
+//             expect(actualXml).to.equal(expectedXml);
 
-        });
+//         });
 
-    });
+//     });
 
-    describe("deserialize", () => {
+//     describe("deserialize", () => {
 
-        it("should work", async () => {
+//         it("should work", async () => {
 
-            const parsed = await xml2js.parseStringPromise(
-`<interface type="network">
-<source network="default"/>
-<mac address="52:54:00:8e:c6:5f"/>
-<model type="virtio"/>
-</interface>`);
-            const actualInterfaceDesc = domainInterfaceXml
-                .deserialize(parsed.interface);
+//             const parsed = await xml2js.parseStringPromise(
+// `<interface type="network">
+// <source network="default"/>
+// <mac address="52:54:00:8e:c6:5f"/>
+// <model type="virtio"/>
+// </interface>`);
+//             const actualInterfaceDesc = domainInterfaceXml
+//                 .deserialize(parsed.interface);
 
-            const expectedInterfaceDesc: DomainInterfaceDesc = {
-                type: "network",
-                source: { network: "default" },
-                mac: { address: "52:54:00:8e:c6:5f" },
-                model: { type: "virtio" },
-            };
+//             const expectedInterfaceDesc: DomainInterfaceDesc = {
+//                 type: "network",
+//                 source: { network: "default" },
+//                 mac: { address: "52:54:00:8e:c6:5f" },
+//                 model: { type: "virtio" },
+//             };
 
-            expect(actualInterfaceDesc).to.deep.equal(expectedInterfaceDesc);
+//             expect(actualInterfaceDesc).to.deep.equal(expectedInterfaceDesc);
 
-        });
+//         });
 
-    });
+//     });
 
-});
+// });
 
-describe("DomainGraphics", () => {
+// describe("DomainGraphics", () => {
 
-    describe("serialize", () => {
+//     describe("serialize", () => {
 
-        it("should work", () => {
+//         it("should work", () => {
 
-            const graphics = domainGraphicsXml.serialize({
-                type: "vnc",
-                port: -1,
-                listen: "0.0.0.0",
-                passwd: "test1",
-            });
+//             const graphics = domainGraphicsXml.serialize({
+//                 type: "vnc",
+//                 port: -1,
+//                 listen: "0.0.0.0",
+//                 passwd: "test1",
+//             });
 
-            const builder = new xml2js.Builder({ headless: true });
-            const actualXml = builder.buildObject({ graphics });
+//             const builder = new xml2js.Builder({ headless: true });
+//             const actualXml = builder.buildObject({ graphics });
 
-            const expectedXml =
-`<graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>`;
+//             const expectedXml =
+// `<graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>`;
 
-            expect(actualXml).to.equal(expectedXml);
+//             expect(actualXml).to.equal(expectedXml);
 
-        });
+//         });
 
-    });
+//     });
 
-    describe("deserialize", () => {
+//     describe("deserialize", () => {
 
-        it("should work", async () => {
+//         it("should work", async () => {
 
-            const parsed = await xml2js.parseStringPromise(
-`<graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>`);
-            const actualGraphicsDesc = domainGraphicsXml
-                .deserialize(parsed.graphics);
+//             const parsed = await xml2js.parseStringPromise(
+// `<graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>`);
+//             const actualGraphicsDesc = domainGraphicsXml
+//                 .deserialize(parsed.graphics);
 
-            const expectedGraphicsDesc: DomainGraphicsDesc = {
-                type: "vnc",
-                port: -1,
-                listen: "0.0.0.0",
-                passwd: "test1",
-            };
+//             const expectedGraphicsDesc: DomainGraphicsDesc = {
+//                 type: "vnc",
+//                 port: -1,
+//                 listen: "0.0.0.0",
+//                 passwd: "test1",
+//             };
 
-            expect(actualGraphicsDesc).to.deep.equal(expectedGraphicsDesc);
+//             expect(actualGraphicsDesc).to.deep.equal(expectedGraphicsDesc);
 
-        });
+//         });
 
-    });
+//     });
 
-});
+// });
 
-describe("domainDescToXml", () => {
+// describe("domainDescToXml", () => {
 
-    it("should work", () => {
+//     it("should work", () => {
 
-        const domain: DomainDesc = {
+//         const domain: DomainDesc = {
 
-            type: "kvm",
+//             type: "kvm",
 
-            name: "test1",
-            uuid: "148d0864-2354-4c27-b82c-731bdd3f320c",
+//             name: "test1",
+//             uuid: "148d0864-2354-4c27-b82c-731bdd3f320c",
 
-            memory: { value: 1048576 },
-            currentMemory: { value: 1048576 },
+//             memory: { value: 1048576 },
+//             currentMemory: { value: 1048576 },
 
-            vcpu: { value: 1 },
+//             vcpu: { value: 1 },
 
-            os: {
-                type: { arch: "x86_64", machine: "q35", value: "hvm" },
-                boot: { dev: "hd" },
-            },
+//             os: {
+//                 type: { arch: "x86_64", machine: "q35", value: "hvm" },
+//                 boot: { dev: "hd" },
+//             },
 
-            devices: [
+//             devices: [
 
-                {
-                    type: "emulator",
-                    emulator: { value: "/usr/bin/qemu-system-x86_64" },
-                },
-
-                {
-                    type: "disk",
-                    disk: {
-                        type: "file", device: "disk",
-                        driver: { name: "qemu", type: "qcow2" },
-                        source: { file: "/home/leon/test1.img" },
-                        target: { dev: "vda", bus: "virtio" },
-                    },
-                },
-
-                {
-                    type: "interface",
-                    interface: {
-                        type: "network",
-                        source: { network: "default" },
-                        mac: { address: "52:54:00:8e:c6:5f" },
-                        model: { type: "virtio" },
-                    },
-                },
+//                 {
+//                     type: "emulator",
+//                     emulator: { value: "/usr/bin/qemu-system-x86_64" },
+//                 },
+
+//                 {
+//                     type: "disk",
+//                     disk: {
+//                         type: "file", device: "disk",
+//                         driver: { name: "qemu", type: "qcow2" },
+//                         source: { file: "/home/leon/test1.img" },
+//                         target: { dev: "vda", bus: "virtio" },
+//                     },
+//                 },
+
+//                 {
+//                     type: "interface",
+//                     interface: {
+//                         type: "network",
+//                         source: { network: "default" },
+//                         mac: { address: "52:54:00:8e:c6:5f" },
+//                         model: { type: "virtio" },
+//                     },
+//                 },
 
-                {
-                    type: "console",
-                    console: { type: "pty" },
-                },
+//                 {
+//                     type: "console",
+//                     console: { type: "pty" },
+//                 },
 
-                {
-                    type: "graphics",
-                    graphics: {
-                        type: "vnc",
-                        port: -1,
-                        listen: "0.0.0.0",
-                        passwd: "test1",
-                    }
-                },
+//                 {
+//                     type: "graphics",
+//                     graphics: {
+//                         type: "vnc",
+//                         port: -1,
+//                         listen: "0.0.0.0",
+//                         passwd: "test1",
+//                     }
+//                 },
 
-            ],
+//             ],
 
-        };
-
-        const actualXml = domainDescToXml(domain);
-
-        const expectedXml =
-`<domain type="kvm">
-  <name>test1</name>
-  <uuid>148d0864-2354-4c27-b82c-731bdd3f320c</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
-  <vcpu>1</vcpu>
-  <os>
-    <type arch="x86_64" machine="q35">hvm</type>
-    <boot dev="hd"/>
-  </os>
-  <devices>
-    <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type="file" device="disk">
-      <driver name="qemu" type="qcow2"/>
-      <source file="/home/leon/test1.img"/>
-      <target dev="vda" bus="virtio"/>
-    </disk>
-    <interface type="network">
-      <source network="default"/>
-      <mac address="52:54:00:8e:c6:5f"/>
-      <model type="virtio"/>
-    </interface>
-    <console type="pty"/>
-    <graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>
-  </devices>
-</domain>`;
-
-        expect(actualXml).to.equal(expectedXml);
-
-    });
-
-});
-
-describe("domainDescFromXml", () => {
-
-    it("should work", async () => {
-
-        const xml =
-`<domain type="kvm">
-  <name>test1</name>
-  <uuid>148d0864-2354-4c27-b82c-731bdd3f320c</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
-  <vcpu>1</vcpu>
-  <os>
-    <type arch="x86_64" machine="q35">hvm</type>
-    <boot dev="hd"/>
-  </os>
-  <devices>
-    <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type="file" device="disk">
-      <driver name="qemu" type="qcow2"/>
-      <source file="/home/leon/test1.img"/>
-      <target dev="vda" bus="virtio"/>
-    </disk>
-    <interface type="network">
-      <source network="default"/>
-      <mac address="52:54:00:8e:c6:5f"/>
-      <model type="virtio"/>
-    </interface>
-    <console type="pty"/>
-    <graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>
-  </devices>
-</domain>`;
-
-        const actualDomainDesc = await domainDescFromXml(xml);
-
-        const expectedDomainDesc: DomainDesc = {
-
-            type: "kvm",
-
-            name: "test1",
-            uuid: "148d0864-2354-4c27-b82c-731bdd3f320c",
-
-            memory: { value: 1048576 },
-            currentMemory: { value: 1048576 },
-
-            vcpu: { value: 1 },
-
-            os: {
-                type: { arch: "x86_64", machine: "q35", value: "hvm" },
-                boot: { dev: "hd" },
-            },
-
-            devices: [
-
-                {
-                    type: "emulator",
-                    emulator: { value: "/usr/bin/qemu-system-x86_64" },
-                },
-
-                {
-                    type: "disk",
-                    disk: {
-                        type: "file", device: "disk",
-                        driver: { name: "qemu", type: "qcow2" },
-                        source: { file: "/home/leon/test1.img" },
-                        target: { dev: "vda", bus: "virtio" },
-                    },
-                },
-
-                {
-                    type: "interface",
-                    interface: {
-                        type: "network",
-                        source: { network: "default" },
-                        mac: { address: "52:54:00:8e:c6:5f" },
-                        model: { type: "virtio" },
-                    },
-                },
-
-                {
-                    type: "console",
-                    console: { type: "pty" },
-                },
-
-                {
-                    type: "graphics",
-                    graphics: {
-                        type: "vnc",
-                        port: -1,
-                        listen: "0.0.0.0",
-                        passwd: "test1",
-                    }
-                },
-
-            ],
-
-        };
-
-        expect(actualDomainDesc).to.deep.equal(expectedDomainDesc);
-
-    });
-
-});
+//         };
+
+//         const actualXml = domainDescToXml(domain);
+
+//         const expectedXml =
+// `<domain type="kvm">
+//   <name>test1</name>
+//   <uuid>148d0864-2354-4c27-b82c-731bdd3f320c</uuid>
+//   <memory>1048576</memory>
+//   <currentMemory>1048576</currentMemory>
+//   <vcpu>1</vcpu>
+//   <os>
+//     <type arch="x86_64" machine="q35">hvm</type>
+//     <boot dev="hd"/>
+//   </os>
+//   <devices>
+//     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+//     <disk type="file" device="disk">
+//       <driver name="qemu" type="qcow2"/>
+//       <source file="/home/leon/test1.img"/>
+//       <target dev="vda" bus="virtio"/>
+//     </disk>
+//     <interface type="network">
+//       <source network="default"/>
+//       <mac address="52:54:00:8e:c6:5f"/>
+//       <model type="virtio"/>
+//     </interface>
+//     <console type="pty"/>
+//     <graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>
+//   </devices>
+// </domain>`;
+
+//         expect(actualXml).to.equal(expectedXml);
+
+//     });
+
+// });
+
+// describe("domainDescFromXml", () => {
+
+//     it("should work", async () => {
+
+//         const xml =
+// `<domain type="kvm">
+//   <name>test1</name>
+//   <uuid>148d0864-2354-4c27-b82c-731bdd3f320c</uuid>
+//   <memory>1048576</memory>
+//   <currentMemory>1048576</currentMemory>
+//   <vcpu>1</vcpu>
+//   <os>
+//     <type arch="x86_64" machine="q35">hvm</type>
+//     <boot dev="hd"/>
+//   </os>
+//   <devices>
+//     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+//     <disk type="file" device="disk">
+//       <driver name="qemu" type="qcow2"/>
+//       <source file="/home/leon/test1.img"/>
+//       <target dev="vda" bus="virtio"/>
+//     </disk>
+//     <interface type="network">
+//       <source network="default"/>
+//       <mac address="52:54:00:8e:c6:5f"/>
+//       <model type="virtio"/>
+//     </interface>
+//     <console type="pty"/>
+//     <graphics type="vnc" port="-1" listen="0.0.0.0" passwd="test1"/>
+//   </devices>
+// </domain>`;
+
+//         const actualDomainDesc = await domainDescFromXml(xml);
+
+//         const expectedDomainDesc: DomainDesc = {
+
+//             type: "kvm",
+
+//             name: "test1",
+//             uuid: "148d0864-2354-4c27-b82c-731bdd3f320c",
+
+//             memory: { value: 1048576 },
+//             currentMemory: { value: 1048576 },
+
+//             vcpu: { value: 1 },
+
+//             os: {
+//                 type: { arch: "x86_64", machine: "q35", value: "hvm" },
+//                 boot: { dev: "hd" },
+//             },
+
+//             devices: [
+
+//                 {
+//                     type: "emulator",
+//                     emulator: { value: "/usr/bin/qemu-system-x86_64" },
+//                 },
+
+//                 {
+//                     type: "disk",
+//                     disk: {
+//                         type: "file", device: "disk",
+//                         driver: { name: "qemu", type: "qcow2" },
+//                         source: { file: "/home/leon/test1.img" },
+//                         target: { dev: "vda", bus: "virtio" },
+//                     },
+//                 },
+
+//                 {
+//                     type: "interface",
+//                     interface: {
+//                         type: "network",
+//                         source: { network: "default" },
+//                         mac: { address: "52:54:00:8e:c6:5f" },
+//                         model: { type: "virtio" },
+//                     },
+//                 },
+
+//                 {
+//                     type: "console",
+//                     console: { type: "pty" },
+//                 },
+
+//                 {
+//                     type: "graphics",
+//                     graphics: {
+//                         type: "vnc",
+//                         port: -1,
+//                         listen: "0.0.0.0",
+//                         passwd: "test1",
+//                     }
+//                 },
+
+//             ],
+
+//         };
+
+//         expect(actualDomainDesc).to.deep.equal(expectedDomainDesc);
+
+//     });
+
+// });
