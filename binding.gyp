@@ -19,6 +19,7 @@
                 "<!@(node -p \"require('node-addon-api').include\")",
                 ".",
                 "/usr/include/glib-2.0",
+                "/usr/lib/glib-2.0/include",
                 "/usr/lib/x86_64-linux-gnu/glib-2.0/include"
             ],
             "link_settings": {
