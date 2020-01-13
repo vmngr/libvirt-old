@@ -15,14 +15,14 @@ import libvirt from "../";
         libvirt.ConnectListAllDomainsFlags.INACTIVE);
 
     if (inactiveDomains.length === 0) {
-        process.stdout.write("No domains to start :(");
+        process.stdout.write("No domains to start :( \n\n");
         return;
     }
 
     for (const inactiveDomain of inactiveDomains) {
         const domainName = await hypervisor.domainGetName(inactiveDomain);
 
-        process.stdout.write(`Starting domain: ${chalk.blue(domainName)} ... `);
+        process.stdout.write(`Starting domain: ${chalk.blue(domainName)} ... \n\n`);
 
         await hypervisor.domainCreate(inactiveDomain).then(() => {
             process.stdout.write(

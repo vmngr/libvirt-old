@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "gypfile": true,
   "scripts": {
+    "postinstall": "tsc",
     "build": "node-gyp rebuild && tsc",
     "test": "mocha -r ts-node/register lib/**/*.spec.ts",
     "lint/bindings": "styleguide/cpplint/cpplint.py src/*",
@@ -14,7 +15,15 @@
     "examples/list": "ts-node -P examples/tsconfig.json examples/list.ts",
     "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",
     "examples/shutdown": "ts-node -P examples/tsconfig.json examples/shutdown.ts",
-    "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts"
+    "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts",
+    "examples/reboot": "ts-node -P examples/tsconfig.json examples/reboot.ts",
+    "examples/interface_stats": "ts-node -P examples/tsconfig.json examples/interface_stats.ts",
+    "examples/parse": "ts-node -P examples/tsconfig.json examples/parse.ts",
+    "examples/tune": "ts-node -P examples/tsconfig.json examples/tune.ts",
+    "examples/tune_current": "ts-node -P examples/tsconfig.json examples/tune_current.ts",
+    "examples/memorystats": "ts-node -P examples/tsconfig.json examples/memorystats.ts",
+    "examples/node_memory": "ts-node -P examples/tsconfig.json examples/node_memory.ts",
+    "examples/node_cpustats": "ts-node -P examples/tsconfig.json examples/node_cpustats.ts"
   },
   "repository": {
     "type": "git",
@@ -45,8 +54,19 @@
   },
   "homepage": "https://github.com/vmngr/libvirt#readme",
   "dependencies": {
+    "@types/bindings": "^1.3.0",
+    "@types/bytes": "^3.1.0",
+    "@types/lodash": "^4.14.149",
+    "@types/uuid": "^3.4.6",
+    "@types/xml2js": "^0.4.5",
     "bindings": "^1.5.0",
+    "byte-size": "^6.2.0",
+    "bytes": "^3.1.0",
+    "lodash": "^4.17.15",
     "node-addon-api": "^1.7.1",
+    "pretty-bytes": "^5.3.0",
+    "systeminformation": "^4.16.0",
+    "uuid": "^3.3.3",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {

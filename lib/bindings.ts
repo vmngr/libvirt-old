@@ -43,12 +43,47 @@ export declare class Hypervisor {
     domainRestore(filename: string): Promise<void>;
     domainCreate(domain: Domain): Promise<void>;
     domainShutdown(domain: Domain): Promise<void>;
+    domainReboot(domain: Domain): Promise<void>;
     domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags):
         Promise<string>;
+    domainInterfaceStats(domain: Domain, device: string): Promise<DomainInterfaceStatsObject>;
+    domainInterfaceTune(domain: Domain, device: string, params: DomainTuneParams): Promise<void>;
+    domainInterfaceTuneCurrent(domain:Domain, device: string): Promise<DomainTuneParams>;
+    domainMemoryStats(domain: Domain): Promise<any>;
+
 
     nodeGetInfo(): Promise<NodeInfo>;
+    nodeGetMemoryStats(): Promise<NodeMemoryStatsStruct>;
+    nodeCpuStats(percentage?: boolean):Promise<any>;
 
 }
+
+export declare interface NodeMemoryStatsStruct {
+    total: number;
+    free: number;
+    buffers: number;
+    cached: number;
+}
+export declare interface DomainTuneParams {
+    inbound?: DomainTuneItem;
+    outbound?: DomainTuneItem;
+}
+export declare interface DomainTuneItem {
+    average: number;
+    peak: number;
+    burst: number;
+    floor: number;
+}
+export declare interface DomainInterfaceStatsObject {
+    rx_bytes: number;
+    rx_packets: number;
+    rx_errs: number;
+    rx_drop: number;
+    tx_bytes: number;
+    tx_packets: number;
+    tx_errs: number;
+    tx_drop: number;
+};
 
 export declare const enum ConnectListAllDomainsFlags {
     ACTIVE         = 1,
@@ -67,6 +102,15 @@ export declare const enum ConnectListAllDomainsFlags {
     NO_SNAPSHOT    = 8192,
     HAS_CHECKPOINT = 16384,
     NO_CHECKPOINT  = 32768,
+}
+
+export declare const enum DomainRebootFlagValues {
+    VIR_DOMAIN_REBOOT_DEFAULT        = 0,
+    VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = 1,
+    VIR_DOMAIN_REBOOT_GUEST_AGENT    = 2,
+    VIR_DOMAIN_REBOOT_INITCTL	     = 4,
+    VIR_DOMAIN_REBOOT_SIGNAL	     = 8,
+    VIR_DOMAIN_REBOOT_PARAVIRT	     = 16,
 }
 
 export declare const enum DomainGetXMLDescFlags {

@@ -9,7 +9,7 @@ import libvirt from "../";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
     await hypervisor.connectOpen();
-
+    console.time('s');
     const hostname = await hypervisor.connectGetHostname();
     process.stdout.write(`Connected to ${hostname}!\n\n`);
 
@@ -24,7 +24,7 @@ import libvirt from "../";
     const inactiveDomainNames = await Promise.all(inactiveDomains
         .map((domain) => hypervisor.domainGetName(domain)));
     await hypervisor.connectClose();
-
+    console.timeEnd('s')
     process.stdout.write("Active Domains\n");
     process.stdout.write("--------------\n");
     for (const name of activeDomainNames) {

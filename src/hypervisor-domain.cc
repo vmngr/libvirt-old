@@ -4,9 +4,8 @@
  * This file is part of the vmngr/libvirt project and is subject to the MIT
  * license as in the LICENSE file in the project root.
  */
-
 #include "src/hypervisor.h"
-
+#include <glib-2.0/glib.h>
 #include "src/worker.h"
 #include "src/domain.h"
 
@@ -699,6 +698,55 @@ Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info) {
 }
 
 /******************************************************************************
+ * DomainReboot                                                            *
+ ******************************************************************************/
+
+class DomainRebootWorker : public Worker {
+ public:
+    DomainRebootWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+          domain(domain), flags(flags) {}
+
+    void Execute(void) override {
+        int reboot = virDomainReboot(domain->domainPtr, flags);
+        if (reboot < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainReboot(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int flags = 0;
+
+    DomainRebootWorker* worker = new DomainRebootWorker(
+        callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
  * DomainGetXMLDesc                                                           *
  ******************************************************************************/
 
@@ -760,6 +808,419 @@ Napi::Value Hypervisor::DomainGetXMLDesc(const Napi::CallbackInfo& info) {
 
     DomainGetXMLDescWorker* worker =
         new DomainGetXMLDescWorker(callback, deferred, this, domain, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainInterfaceStats                                                       *
+ ******************************************************************************/
+class DomainInterfaceStatsWorker : public Worker {
+ public:
+    DomainInterfaceStatsWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device) {}
+
+    void Execute(void) override {
+        int ret = virDomainInterfaceStats(domain->domainPtr,
+                    device.c_str(), &ifstats, sizeof(ifstats));
+        if (ret < 0) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object info = Napi::Object::New(Env());
+
+        info.Set("rx_bytes", Napi::Number::New(Env(), ifstats.rx_bytes));
+        info.Set("rx_packets", Napi::Number::New(Env(), ifstats.rx_packets));
+        info.Set("rx_errs", Napi::Number::New(Env(), ifstats.rx_errs));
+        info.Set("rx_drop", Napi::Number::New(Env(), ifstats.rx_drop));
+        info.Set("tx_bytes", Napi::Number::New(Env(), ifstats.tx_bytes));
+        info.Set("tx_packets", Napi::Number::New(Env(), ifstats.tx_packets));
+        info.Set("tx_errs", Napi::Number::New(Env(), ifstats.tx_errs));
+        info.Set("tx_drop", Napi::Number::New(Env(), ifstats.tx_drop));
+
+        deferred.Resolve(info);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virDomainInterfaceStatsStruct ifstats;
+};
+
+Napi::Value Hypervisor::DomainInterfaceStats(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() == 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a interface device name at 2nd arg."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+    DomainInterfaceStatsWorker* worker =
+        new DomainInterfaceStatsWorker(callback, deferred, this,
+        domain, device);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainInterfaceTuneWorker                                                       *
+ ******************************************************************************/
+class DomainInterfaceTuneWorker : public Worker {
+ public:
+    DomainInterfaceTuneWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device,
+        virTypedParameterPtr params,
+        int nparams,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device), params(params),
+         nparams(nparams), flags(flags) {}
+
+    void Execute(void) override {
+        int ret = virDomainSetInterfaceParameters(domain->domainPtr,
+                  device.c_str(), params, nparams, flags);
+        if (ret < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virTypedParameterPtr params;
+    int nparams;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainInterfaceTune(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    virTypedParameterPtr params = NULL;
+    virNetDevBandwidthRate inbound;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    int nparams = 0;
+    int maxparams = 0;
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() >= 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a device interface name by second arg."));
+        return deferred.Promise();
+    } else if (info.Length() >= 3 && !info[2].IsObject()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected tune object (inbound?, outbound?) by 3rd arg."));
+        return deferred.Promise();
+    }
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+    Napi::Object interfaceTune = info[2].As<Napi::Object>();
+
+    if (interfaceTune.Has("inbound") &&
+        interfaceTune.Get("inbound").IsObject() ) {
+        Napi::Object inboundObj = interfaceTune.Get("inbound")
+                                  .As<Napi::Object>();
+
+        inbound.average = inboundObj.Get("average")
+                          .As<Napi::Number>().ToNumber().Uint32Value();
+        inbound.peak = inboundObj.Get("peak")
+                          .As<Napi::Number>().ToNumber().Uint32Value();
+
+        inbound.burst = inboundObj.Get("burst")
+                        .As<Napi::Number>().ToNumber().Uint32Value();
+        inbound.floor = inboundObj.Get("floor")
+                        .As<Napi::Number>().ToNumber().Uint32Value();
+
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                          inbound.average);
+
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                          inbound.peak);
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                          inbound.burst);
+        virTypedParamsAddUInt(&params, &nparams,
+                          &maxparams, VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                          inbound.floor);
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainInterfaceTuneWorker* worker =
+        new DomainInterfaceTuneWorker(callback, deferred, this,
+        domain, device, params, nparams, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainInterfaceTuneCurrentWorker                                           *
+ ******************************************************************************/
+class DomainInterfaceTuneCurrentWorker : public Worker {
+ public:
+    DomainInterfaceTuneCurrentWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        std::string device,
+        virTypedParameterPtr params,
+        int nparams,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), device(device), params(params),
+         nparams(nparams), flags(flags) {}
+
+    void Execute(void) override {
+        int ret = virDomainGetInterfaceParameters(domain->domainPtr,
+                          device.c_str(), NULL, &nparams, flags);
+        if (ret != 0) {
+            throw Napi::Error::New(Env(),
+                "Unable to get number of interface parameters");
+        }
+
+        // params = new virTypedParameterPtr;
+        params = (virTypedParameterPtr) g_malloc0_n(nparams, sizeof(*params));
+
+        int reret = virDomainGetInterfaceParameters(domain->domainPtr,
+                 device.c_str(), params, &nparams, flags);
+        if (reret != 0){
+            SetVirError();
+        }
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object currentTune = Napi::Object::New(Env());
+        currentTune.Set("inbound", Napi::Object::New(Env()));
+        currentTune.Set("outbound", Napi::Object::New(Env()));
+
+        for (int i = 0; i < nparams; i++) {
+            char *token;
+            std::string search = ".";
+            char *rest = params[i].field;
+
+            token = strtok_r(params[i].field, search.c_str(), &rest);
+            std::string bound = std::string(token);
+            token = strtok_r(NULL, search.c_str(), &rest);
+            std::string type = std::string(token);
+            // No more things to tokenize
+            Napi::Object boundObject = currentTune.Get(bound)
+                                       .As<Napi::Object>();
+            char *str = getTypedParamValue(&params[i]);
+            Napi::Number tuneValue = Napi::Number::New(Env(), atof(str));
+
+            boundObject.Set(std::string(type), tuneValue);
+        }
+
+        deferred.Resolve(currentTune);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    std::string device;
+    virTypedParameterPtr params;
+    int nparams;
+    unsigned int flags;
+};
+
+Napi::Value Hypervisor::DomainInterfaceTuneCurrent
+            (const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    virTypedParameterPtr params = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    int nparams = 0;
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() == 1) {
+        deferred.Reject(Napi::String::New(env,
+                        "Expected a device name by 2nd arg."));
+
+        return deferred.Promise();
+    } else if (info.Length() >= 2 && !info[1].IsString()) {
+        deferred.Reject(Napi::String::New(env,
+        "Expected a device interface name by second arg."));
+        return deferred.Promise();
+    }
+
+    std::string device = info[1].As<Napi::String>().Utf8Value();
+
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainInterfaceTuneCurrentWorker* worker =
+        new DomainInterfaceTuneCurrentWorker(callback, deferred, this,
+        domain, device, params, nparams, flags);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainMemoryStats                                                          *
+ ******************************************************************************/
+class DomainMemoryStatsWorker : public Worker {
+ public:
+    DomainMemoryStatsWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int flags)
+        : Worker(callback, deferred, hypervisor),
+         domain(domain), flags(flags) {}
+
+    void Execute(void) override {
+        int ret = virDomainSetMemoryStatsPeriod(domain->domainPtr, 1, flags);
+        if (ret < 0 ) SetVirError();
+
+        nr_stats = virDomainMemoryStats(domain->domainPtr, memstats,
+                    VIR_DOMAIN_MEMORY_STAT_NR, 0);
+        if (nr_stats < 0) SetVirError();
+    }
+
+    void OnOK(void) override {
+        Napi::HandleScope scope(Env());
+
+        Napi::Object info = Napi::Object::New(Env());
+        unsigned long long actual = 0;
+        unsigned long long usable = 0;
+        unsigned long long available = 0;
+        for (int i = 0; i < nr_stats; i++) {
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
+                info.Set("swap_in", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_OUT)
+                info.Set("swap_out", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT)
+                info.Set("major_fault", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT)
+                info.Set("minor_fault", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_UNUSED)
+                info.Set("unused", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE) {
+                info.Set("available", Napi::Number::New(Env(), memstats[i].val));
+                available = memstats[i].val;
+            }
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_USABLE) {
+                info.Set("usable", Napi::Number::New(Env(), memstats[i].val));
+                usable = memstats[i].val;
+            }
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
+                info.Set("actual", Napi::Number::New(Env(), memstats[i].val));
+                actual = memstats[i].val;
+            }
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS) {
+                info.Set("rss", Napi::Number::New(Env(), memstats[i].val));
+            }
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE)
+                info.Set("last_update", Napi::Number::New(Env(), memstats[i].val));
+            if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_DISK_CACHES)
+                info.Set("disk_caches", Napi::Number::New(Env(), memstats[i].val));
+            // if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC)
+            //     info.Set("hugetlb_pgalloc", Napi::Number::New(Env(), memstats[i].val));
+            // if (memstats[i].tag == VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL)
+            //     info.Set("hugetlb_pgfail", Napi::Number::New(Env(), memstats[i].val));
+        }
+        
+        info.Set("used", Napi::Number::New(Env(), actual - usable));
+        deferred.Resolve(info);
+        Callback().Call({});
+    }
+
+ private:
+    Domain* domain;
+    unsigned int flags;
+    int nr_stats;
+    virDomainMemoryStatStruct memstats[VIR_DOMAIN_MEMORY_STAT_NR];
+};
+
+Napi::Value Hypervisor::DomainMemoryStats(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    if (info.Length() < 1) {
+        deferred.Reject(Napi::String::New(env, "Expected a domain ptr."));
+        return deferred.Promise();
+    } else if (info.Length() > 1) {
+        deferred.Reject(Napi::String::New(env, "Method doesn't require more args."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    DomainMemoryStatsWorker* worker =
+        new DomainMemoryStatsWorker(callback, deferred, this, domain, flags);
     worker->Queue();
 
     return deferred.Promise();

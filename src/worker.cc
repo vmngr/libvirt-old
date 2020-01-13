@@ -5,9 +5,11 @@
  * license as in the LICENSE file in the project root.
  */
 
-#include "src/worker.h"
-
 #include <string>
+
+#include "src/worker.h"
+#include "src/hypervisor.h"
+
 
 void Worker::SetVirError(void) {
     virErrorPtr err = virGetLastError();
