@@ -60,10 +60,11 @@ export declare interface DomainDiskDesc {
  */
 export declare interface DomainInterfaceDesc {
 
-    type?: "network";
+    type?: "network" | "bridge";
 
     source?: {
         network?: string;
+        bridge?: string;
     };
 
     mac?: {

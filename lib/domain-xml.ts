@@ -145,6 +145,9 @@ export const domainInterfaceXml = {
             if (interfaceDesc.source.network) {
                 iface.source.$.network = interfaceDesc.source.network;
             }
+            if (interfaceDesc.source.bridge){
+                iface.source.$.bridge = interfaceDesc.source.bridge;
+            }
         }
 
         if (interfaceDesc.mac) {
