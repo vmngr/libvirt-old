@@ -3,8 +3,7 @@ const process = require ("process");
 
 const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
 
-(async () => {
-
+const main = async () => {
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
     const hypervisor = new Hypervisor({ uri });
 
@@ -35,4 +34,6 @@ const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
     }
     process.stdout.write("\n");
 
-})();
+};
+
+main().catch(console.error);

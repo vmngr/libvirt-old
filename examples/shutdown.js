@@ -3,8 +3,7 @@ const process = require ("process");
 
 const { ConnectListAllDomainsFlags } = require("../dist");
 
-(async () => {
-
+const main = async () => {
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
     const hypervisor = new libvirt.Hypervisor({ uri });
 
@@ -33,4 +32,6 @@ const { ConnectListAllDomainsFlags } = require("../dist");
         });
     }
 
-})();
+};
+
+main().catch(console.error);

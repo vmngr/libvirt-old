@@ -2,8 +2,7 @@ const chalk = require ("chalk");
 
 const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
 
-(async () => {
-
+const main = async () => {
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
     const hypervisor = new Hypervisor({ uri });
 
@@ -23,12 +22,12 @@ const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
         process.stdout.write(`Starting domain: ${chalk.blue(domainName)} ... `);
 
         await hypervisor.domainCreate(inactiveDomain).then(() => {
-            process.stdout.write(
-                `domain ${chalk.green(domainName)} has been started!\n\n`);
-        }).catch((err: Error) => {
-            process.stderr.write(
-                `domain ${chalk.red(domainName)} shutdown ERROR: ${err} \n\n`);
+            process.stdout.write(`domain ${chalk.green(domainName)} has been started!\n\n`);
+        }).catch(err => {
+            process.stderr.write(`domain ${chalk.red(domainName)} shutdown ERROR: ${err} \n\n`);
         });
     }
 
-})();
+};
+
+main().catch(console.error);

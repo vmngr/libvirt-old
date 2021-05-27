@@ -5,7 +5,7 @@ const {
     Hypervisor
 } = require("../dist");
 
-(async () => {
+const main = async () => {
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
     const hypervisor = new Hypervisor({ uri });
 
@@ -52,4 +52,6 @@ const {
         const xml = domainDescToXml(domain);
         await hypervisor.domainDefineXML(xml);
 
-})();
+};
+
+main().catch(console.error);
