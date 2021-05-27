@@ -18,10 +18,10 @@
     "lint/bindings": "styleguide/cpplint/cpplint.py src/*",
     "lint/lib": "eslint lib/**/*.ts",
     "lint/examples": "eslint examples",
-    "examples/list": "ts-node -P examples/tsconfig.json examples/list.ts",
-    "examples/start": "ts-node -P examples/tsconfig.json examples/start.ts",
-    "examples/shutdown": "ts-node -P examples/tsconfig.json examples/shutdown.ts",
-    "examples/builder": "ts-node -P examples/tsconfig.json examples/builder.ts"
+    "examples/list": "node examples/list.js",
+    "examples/start": "node examples/start.js",
+    "examples/shutdown": "node examples/shutdown.js",
+    "examples/builder": "node examples/builder.js"
   },
   "repository": {
     "type": "git",

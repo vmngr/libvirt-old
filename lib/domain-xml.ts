@@ -37,18 +37,20 @@ export const domainOsXml = {
 						} : {}),
 						...(osDesc.type.machine ? {
 							machine: osDesc.type.machine
-						} : {}),
-						...(osDesc.type.value ? {
-							_: osDesc.type.value
 						} : {})
-					}
+					},
+					...(osDesc.type.value ? {
+						_: osDesc.type.value
+					} : {})
 				}
 			} : {}),
 			...(osDesc.boot ? {
-				$: {
-					...(osDesc.boot.dev ? {
-						dev: osDesc.boot.dev
-					} : {})
+				boot: {
+					$: {
+						...(osDesc.boot.dev ? {
+							dev: osDesc.boot.dev
+						} : {})
+					}
 				}
 			} : {})
 		};
@@ -95,7 +97,7 @@ export const domainDiskXml = {
 				driver: {
 					$: {
 						...(diskDesc.driver.name ? { name: diskDesc.driver.name } : {}),
-						...(diskDesc.driver.type ? { name: diskDesc.driver.type } : {})
+						...(diskDesc.driver.type ? { type: diskDesc.driver.type } : {})
 					}
 				}
 			} : {}),
@@ -109,8 +111,8 @@ export const domainDiskXml = {
 			...(diskDesc.target ? {
 				target: {
 					$: {
-						...(diskDesc.target.dev ? { file: diskDesc.target.dev } : {}),
-						...(diskDesc.target.bus ? { file: diskDesc.target.bus } : {})
+						...(diskDesc.target.dev ? { dev: diskDesc.target.dev } : {}),
+						...(diskDesc.target.bus ? { bus: diskDesc.target.bus } : {})
 					}
 				}
 			} : {})
@@ -176,16 +178,16 @@ export const domainInterfaceXml = {
 				}
 			} : {}),
 			...(interfaceDesc.mac ? {
-				source: {
+				mac: {
 					$: {
-						...(interfaceDesc.mac.address ? { network: interfaceDesc.mac.address } : {})
+						...(interfaceDesc.mac.address ? { address: interfaceDesc.mac.address } : {})
 					}
 				}
 			} : {}),
 			...(interfaceDesc.model ? {
-				source: {
+				model: {
 					$: {
-						...(interfaceDesc.model.type ? { network: interfaceDesc.model.type } : {})
+						...(interfaceDesc.model.type ? { type: interfaceDesc.model.type } : {})
 					}
 				}
 			} : {})
