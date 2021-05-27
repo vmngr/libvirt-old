@@ -16,17 +16,15 @@
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainOsDesc {
+	type?: {
+		arch?: string;
+		machine?: string;
+		value?: string;
+	};
 
-    type?: {
-        arch?: string;
-        machine?: string;
-        value?: string;
-    };
-
-    boot?: {
-        dev?: string;
-    };
-
+	boot?: {
+		dev?: string;
+	};
 }
 
 /**
@@ -34,23 +32,22 @@ export declare interface DomainOsDesc {
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainDiskDesc {
+	type?: 'file';
+	device?: 'disk';
 
-    type?: "file";
-    device?: "disk";
+	driver?: {
+		name?: 'qemu';
+		type?: 'qcow2';
+	};
 
-    driver?: {
-        name?: "qemu";
-        type?: "qcow2";
-    };
+	source?: {
+		file?: string;
+	};
 
-    source?: {
-        file?: string;
-    };
-
-    target?: {
-        dev?: string;
-        bus?: "virtio";
-    };
+	target?: {
+		dev?: string;
+		bus?: 'virtio';
+	};
 
 }
 
@@ -59,21 +56,16 @@ export declare interface DomainDiskDesc {
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainInterfaceDesc {
-
-    type?: "network";
-
-    source?: {
-        network?: string;
-    };
-
-    mac?: {
-        address?: string;
-    };
-
-    model?: {
-        type?: "virtio";
-    };
-
+	type?: 'network';
+	source?: {
+		network?: string;
+	};
+	mac?: {
+		address?: string;
+	};
+	model?: {
+		type?: 'virtio';
+	};
 }
 
 /**
@@ -81,12 +73,10 @@ export declare interface DomainInterfaceDesc {
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainGraphicsDesc {
-
-    type?: "vnc";
-    port?: number;
-    listen?: string;
-    passwd?: string;
-
+	type?: 'vnc';
+	port?: number;
+	listen?: string;
+	passwd?: string;
 }
 
 /**
@@ -94,61 +84,47 @@ export declare interface DomainGraphicsDesc {
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainDesc {
+	type?: 'kvm';
+	id?: number;
 
-    type?: "kvm";
-    id?: number;
+	name?: string;
+	uuid?: string;
 
-    name?: string;
-    uuid?: string;
+	memory?: {
+		unit?: 'KiB';
+		value?: number;
+	};
 
-    memory?: {
-        unit?: "KiB";
-        value?: number;
-    };
+	currentMemory?: {
+		unit?: 'KiB';
+		value?: number;
+	};
 
-    currentMemory?: {
-        unit?: "KiB";
-        value?: number;
-    };
+	vcpu?: {
+		placement?: 'static';
+		value?: number;
+	};
 
-    vcpu?: {
-        placement?: "static";
-        value?: number;
-    };
+	os?: DomainOsDesc;
 
-    os?: DomainOsDesc;
-
-    devices?: Array<
-
-        {
-            type: "emulator";
-            emulator: {
-                value?: string;
-            };
-        } |
-
-        {
-            type: "disk";
-            disk: DomainDiskDesc;
-        } |
-
-        {
-            type: "interface";
-            interface: DomainInterfaceDesc;
-        } |
-
-        {
-            type: "console";
-            console: {
-                type?: "pty";
-            };
-        } |
-
-        {
-            type: "graphics";
-            graphics: DomainGraphicsDesc;
-        }
-
-    >;
-
+	devices?: Array<{
+		type: 'emulator';
+		emulator: {
+			value?: string;
+		};
+	} | {
+		type: 'disk';
+		disk: DomainDiskDesc;
+	} | {
+		type: 'interface';
+		interface: DomainInterfaceDesc;
+	} | {
+		type: 'console';
+		console: {
+			type?: 'pty';
+		};
+	} | {
+		type: 'graphics';
+		graphics: DomainGraphicsDesc;
+	}>;
 }

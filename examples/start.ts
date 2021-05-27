@@ -1,18 +1,16 @@
-import chalk from "chalk";
-import process from "process";
+const chalk = require ("chalk");
 
-import libvirt from "../";
+const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
 
 (async () => {
 
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
-    const hypervisor = new libvirt.Hypervisor({ uri });
+    const hypervisor = new Hypervisor({ uri });
 
     // Connecting to our hypervisor
     await hypervisor.connectOpen();
 
-    const inactiveDomains = await hypervisor.connectListAllDomains(
-        libvirt.ConnectListAllDomainsFlags.INACTIVE);
+    const inactiveDomains = await hypervisor.connectListAllDomains(ConnectListAllDomainsFlags.INACTIVE);
 
     if (inactiveDomains.length === 0) {
         process.stdout.write("No domains to start :(");

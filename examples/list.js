@@ -1,28 +1,24 @@
-import chalk from "chalk";
-import process from "process";
+const chalk = require ("chalk");
+const process = require ("process");
 
-import libvirt from "../";
+const { Hypervisor, ConnectListAllDomainsFlags } = require("../dist");
 
 (async () => {
 
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
-    const hypervisor = new libvirt.Hypervisor({ uri });
+    const hypervisor = new Hypervisor({ uri });
 
     await hypervisor.connectOpen();
 
     const hostname = await hypervisor.connectGetHostname();
     process.stdout.write(`Connected to ${hostname}!\n\n`);
 
-    const activeDomains = await hypervisor.connectListAllDomains(
-        libvirt.ConnectListAllDomainsFlags.ACTIVE);
-    const inactiveDomains = await hypervisor.connectListAllDomains(
-        libvirt.ConnectListAllDomainsFlags.INACTIVE);
+    const activeDomains = await hypervisor.connectListAllDomains(ConnectListAllDomainsFlags.ACTIVE);
+    const inactiveDomains = await hypervisor.connectListAllDomains(ConnectListAllDomainsFlags.INACTIVE);
 
-    const activeDomainNames = await Promise.all(activeDomains
-        .map((domain) => hypervisor.domainGetName(domain)));
+    const activeDomainNames = await Promise.all(activeDomains.map((domain) => hypervisor.domainGetName(domain)));
 
-    const inactiveDomainNames = await Promise.all(inactiveDomains
-        .map((domain) => hypervisor.domainGetName(domain)));
+    const inactiveDomainNames = await Promise.all(inactiveDomains.map((domain) => hypervisor.domainGetName(domain)));
     await hypervisor.connectClose();
 
     process.stdout.write("Active Domains\n");
