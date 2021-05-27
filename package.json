@@ -10,6 +10,7 @@
     "build"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "npm run build/native && npm run build/ts",
     "build/native": "node-gyp rebuild",
     "build/ts": "tsup lib/index.ts --dts",
