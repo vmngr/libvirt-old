@@ -38,9 +38,12 @@ export const DomainGetXMLDescFlags = {
 	MIGRATABLE: 8
 };
 
+// https://libvirt.org/manpages/virsh.html#list
 export const DomainState = {
 	NOSTATE: 0,
 	RUNNING: 1,
+	// Docs are wrong this is not IDLE this is BLOCKED
+	// libvirt-domain.h can prove this
 	BLOCKED: 2,
 	PAUSED: 3,
 	SHUTDOWN: 4,
