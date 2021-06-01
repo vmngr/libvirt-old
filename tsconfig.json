@@ -63,5 +63,9 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": [ "dist", "examples" ]
+  "include": [
+    "lib/**/*.d.ts",
+    "lib**/*.ts",
+    ".eslintrc.js"
+  ]
 }

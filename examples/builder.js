@@ -1,13 +1,13 @@
-import libvirt, {
+const {
     DomainBuilder,
     domainDescToXml,
     domainDescFromXml,
-} from "../dist";
+    Hypervisor
+} = require("../dist");
 
-(async () => {
-
+const main = async () => {
     const uri = process.env.LIBVIRT_URI || "qemu:///system";
-    const hypervisor = new libvirt.Hypervisor({ uri });
+    const hypervisor = new Hypervisor({ uri });
 
     await hypervisor.connectOpen();
 
@@ -52,4 +52,6 @@ import libvirt, {
         const xml = domainDescToXml(domain);
         await hypervisor.domainDefineXML(xml);
 
-})();
+};
+
+main().catch(console.error);
